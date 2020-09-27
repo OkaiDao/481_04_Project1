@@ -77,6 +77,7 @@ function setup( ) // P5 Setup Fcn
     do_btn( ); //
     console.log( "p5 Load the image." );
     get_images( );
+	b_tiles_count = document.getElementById("bot_tiles_count"); //added bot's tiles count's
     console.log( "p5 End P5 setup =====" );
 }
 
