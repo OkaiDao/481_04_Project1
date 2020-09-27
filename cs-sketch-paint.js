@@ -22,6 +22,7 @@ var g_button2; // btn
 var g_color;
 var g_sctrl;
 var g_tiles;
+var b_tiles_count //bot's tiles count's
 
 var g_l4job = { id:1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
 
