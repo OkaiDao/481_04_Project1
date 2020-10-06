@@ -1,6 +1,8 @@
-<!DOCTYPE html>    <!-- this is a HTML comment -->    <!--  -->
-<html lang="">    <!-- HTML page begs/ends w 'html' tag -->
-  <head>    <!-- HTML page has 'head'section and 'body' section -->
+﻿<!DOCTYPE html>    <!-- this is a HTML comment -->    <!--  -->
+<html lang="">
+<!-- HTML page begs/ends w 'html' tag -->
+<head>
+    <!-- HTML page has 'head'section and 'body' section -->
     <meta foo="Time-stamp: <2020-09-20 22:42:25 Chuck Siska>">
     <!-- ================================================ Mods ====
      o- 2020-02-09 22:18:17: add btn onclick exported fn
@@ -14,419 +16,485 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jathp-P5-JS-HTML</title>     <!-- Browser or tab title -->
     <link rel="stylesheet" href="assets/styles.css">    <!-- Tiny CSS style file -->
-    <style> body {padding: 0; margin: 0;} </style>    <!-- Bit of in-line CSS -->
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>    <!-- Bit of in-line CSS -->
     <script src="p5.js"></script>    <!-- Load P5.JS, one file -->
     <!-- For more P5.JS, CF https://github.com/processing/p5.js/wiki -->
     <script src="cs-sketch-paint.js"></script>    <!-- Load my setup+draw P5-req'd fcns -->
-
     <script type="text/javascript" src="Jathp.js"></script>    <!-- Load Jathp -->
-
-  </head>
-  <body>	 <!-- HTML page body-->
-	<h1>CPSC 481 Project 1 -- A Star Search</h1> <!--header title-->
-	<p>	
-	Team Ook Ook.
-	<p>    <!-- Step Counter -->
-    	Bot's Tiles Count's:
-	<p id="bot_tiles_count">    <!-- bot's tiles count's -->
-  </body>    <!-- HTML display page ends here -->
-
+</head>
+<body>
+</body>    <!-- HTML display page ends here -->
 <script src="assets/draw-stuff.js"></script> <!-- Load some JS fcns in a file -->
-
 <!-- ==================================================================== -->
+<script type="text/lisp">
+    ;File: prelude.lsp
+    ; This file contains aliases and common definitions.
+    ; It also imports the javascript Math functions.
 
-<script type="text/lisp"> ;File: prelude.lsp
-; This file contains aliases and common definitions.
-; It also imports the javascript Math functions.
+    (def + plus)
+    (def define def)
+    (def #t 't)
+    (def #f Nil)
+    (def nil Nil)
+    (def - minus)
+    (def / divide)
+    (def % rem)
+    (def * times)
+    (def = equal)
+    (def eq? equal)
+    (def head car)
+    (def first car)
+    (def tail cdr)
+    (def rest cdr)
+    (def eq equal)
+    (defun null (x) (equal x Nil))
+    (defun zerop (x) (equal x 0))
+    (defun plusp (x) (> x 0))
+    (defun minusp (x) (< x 0))
+    (defun evenp (x) (equal (rem x 2) 0))
+    (defun oddp (x) (/= (rem x 2) 1))
 
-(def + plus)
-(def define def)
-(def #t 't)
-(def #f Nil)
-(def nil Nil)
-(def - minus)
-(def / divide)
-(def % rem)
-(def * times)
-(def = equal)
-(def eq? equal)
-(def head car)
-(def first car)
-(def tail cdr)
-(def rest cdr)
-(def eq equal)
-(defun null (x) (equal x Nil))
-(defun zerop (x) (equal x 0))
-(defun plusp (x) (> x 0))
-(defun minusp (x) (< x 0))
-(defun evenp (x) (equal (rem x 2) 0))
-(defun oddp (x) (/= (rem x 2) 1))
+    ;; CS: pprint the Javathcript prelude fragment.
+    (defun member (E L) ;; CS: orig name was "list-member", non-std.
+    (cond
+    ((null L) Nil) ;; Not found in list L.
+    ((equal E (first L)) L) ;; Found E, return L's remainder CS:Orig retval = 't.
+    ('t (member E (rest L)))))  ;; Not in head, check tail.
 
-;; CS: pprint the Javathcript prelude fragment.
-(defun member (E L) ;; CS: orig name was "list-member", non-std.
-  (cond
-   ((null L) Nil) ;; Not found in list L.
-   ((equal E (first L)) L) ;; Found E, return L's remainder CS:Orig retval = 't.
-   ('t (member E (rest L)))))  ;; Not in head, check tail.
-
-(defun map (F L) ;;convert L=(e1 e2 ... eN) to ((F e1) (F e2) ... (F eN))
-  (if (null L)
-      Nil
+    (defun map (F L) ;;convert L=(e1 e2 ... eN) to ((F e1) (F e2) ... (F eN))
+    (if (null L)
+    Nil
     (cons (F (head L))
-          (map F (tail L)))))
+    (map F (tail L)))))
 
 
-; CADDRs
+    ; CADDRs
 
-(defun caar (x) (car (car x)))                    
-(defun cadr (x) (car (cdr x)))                    
-(defun cdar (x) (cdr (car x)))                   
-(defun cddr (x) (cdr (cdr x)))                    
-(defun caaar (x) (car (car (car x))))              
-(defun caadr (x) (car (car (cdr x))))             
-(defun cadar (x) (car (cdr (car x))))              
-(defun caddr (x) (car (cdr (cdr x))))              
-(defun cdaar (x) (cdr (car (car x))))              
-(defun cdadr (x) (cdr (car (cdr x))))              
-(defun cddar (x) (cdr (cdr (car x))))              
-(defun cdddr (x) (cdr (cdr (cdr x))))              
-(defun caaaar (x) (car (car (car (car x)))))        
-(defun caaadr (x) (car (car (car (cdr x)))))        
-(defun caadar (x) (car (car (cdr (car x)))))        
-(defun caaddr (x) (car (car (cdr (cdr x)))))        
-(defun cadaar (x) (car (cdr (car (car x)))))        
-(defun cadadr (x) (car (cdr (car (cdr x)))))        
-(defun caddar (x) (car (cdr (cdr (car x)))))        
-(defun cadddr (x) (car (cdr (cdr (cdr x)))))        
-(defun cdaaar (x) (cdr (car (car (car x)))))        
-(defun cdaadr (x) (cdr (car (car (cdr x)))))        
-(defun cdadar (x) (cdr (car (cdr (car x)))))        
-(defun cdaddr (x) (cdr (car (cdr (cdr x)))))        
-(defun cddaar (x) (cdr (cdr (car (car x)))))        
-(defun cddadr (x) (cdr (cdr (car (cdr x)))))        
-(defun cdddar (x) (cdr (cdr (cdr (car x)))))        
-(defun cddddr (x) (cdr (cdr (cdr (cdr x)))))        
+    (defun caar (x) (car (car x)))
+    (defun cadr (x) (car (cdr x)))
+    (defun cdar (x) (cdr (car x)))
+    (defun cddr (x) (cdr (cdr x)))
+    (defun caaar (x) (car (car (car x))))
+    (defun caadr (x) (car (car (cdr x))))
+    (defun cadar (x) (car (cdr (car x))))
+    (defun caddr (x) (car (cdr (cdr x))))
+    (defun cdaar (x) (cdr (car (car x))))
+    (defun cdadr (x) (cdr (car (cdr x))))
+    (defun cddar (x) (cdr (cdr (car x))))
+    (defun cdddr (x) (cdr (cdr (cdr x))))
+    (defun caaaar (x) (car (car (car (car x)))))
+    (defun caaadr (x) (car (car (car (cdr x)))))
+    (defun caadar (x) (car (car (cdr (car x)))))
+    (defun caaddr (x) (car (car (cdr (cdr x)))))
+    (defun cadaar (x) (car (cdr (car (car x)))))
+    (defun cadadr (x) (car (cdr (car (cdr x)))))
+    (defun caddar (x) (car (cdr (cdr (car x)))))
+    (defun cadddr (x) (car (cdr (cdr (cdr x)))))
+    (defun cdaaar (x) (cdr (car (car (car x)))))
+    (defun cdaadr (x) (cdr (car (car (cdr x)))))
+    (defun cdadar (x) (cdr (car (cdr (car x)))))
+    (defun cdaddr (x) (cdr (car (cdr (cdr x)))))
+    (defun cddaar (x) (cdr (cdr (car (car x)))))
+    (defun cddadr (x) (cdr (cdr (car (cdr x)))))
+    (defun cdddar (x) (cdr (cdr (cdr (car x)))))
+    (defun cddddr (x) (cdr (cdr (cdr (cdr x)))))
 
-; Some stuff specific to being run in a browser.
+    ; Some stuff specific to being run in a browser.
 
-(def document (js "document"))
-(def body (js "document.body"))
-(def window (js "window"))
-(def getElement (method document "getElementById"))
-(def alert (method window "alert"))
-(def message alert)
-(def confirm (method window "confirm"))
-(def console (js "console"))
+    (def document (js "document"))
+    (def body (js "document.body"))
+    (def window (js "window"))
+    (def getElement (method document "getElementById"))
+    (def alert (method window "alert"))
+    (def message alert)
+    (def confirm (method window "confirm"))
+    (def console (js "console"))
 
-; To be more like emacs, you might want to uncomment these two lines
-; (def setp set)
-; (def set def)
+    ; To be more like emacs, you might want to uncomment these two lines
+    ; (def setp set)
+    ; (def set def)
 
-; Import PI and the javascript math functions.
-;; CS: pprint the Javathcript prelude fragment.
+    ; Import PI and the javascript math functions.
+    ;; CS: pprint the Javathcript prelude fragment.
 
-(let* ((math (js "Math"))
-       (import-math
-        (lambda (funcname) 
-          (def-dyn funcname (method math funcname)))))
-  (map import-math
-       '(sin cos tan asin acos atan atan2
-         abs floor ceil round trunc
-         max min
-         pow exp sqrt log log2 log10
-         hypot
-         random)))
+    (let* ((math (js "Math"))
+    (import-math
+    (lambda (funcname)
+    (def-dyn funcname (method math funcname)))))
+    (map import-math
+    '(sin cos tan asin acos atan atan2
+    abs floor ceil round trunc
+    max min
+    pow exp sqrt log log2 log10
+    hypot
+    random)))
 
-;; Jathp extras via defines; put here to be in correct scope.
-(def expt pow)
-(def != /=)
+    ;; Jathp extras via defines; put here to be in correct scope.
+    (def expt pow)
+    (def != /=)
 
-(defun append (x y)
-  (cond ((null x) y)
-        ('t (cons (car x) (append (cdr x) y)))))
+    (defun append (x y)
+    (cond ((null x) y)
+    ('t (cons (car x) (append (cdr x) y)))))
 
 </script>
 
-
 <!-- ==================================================================== -->
 <script type="text/lisp">
-(defun msg (rlist) ;; Create webpage popup alert/msg.
-  (list
+    (defun msg (rlist) ;; Create webpage popup alert/msg.
+    (list
     (message (concat "msg: " rlist ))))
 </script>
 
-
-<!-- ==================================================== stgr ==== -->
+<!-- Structure For Paths--> >
 <script type="text/lisp">
-;; CS: print fcn for Jathp (to console)
-;; Must create a print-string for the value.
-;; [CS: Crash sensitivity to dbl-quoted open, "("; needs leading space.]
-(defun stgr (rx)
-  (cond
-   ((numberp rx) (concat "" rx))
-   ((null rx) "nil")
-   ((stringp rx) rx)
-   ((atom rx) (concat "" rx))
-   ((functionp rx) (fcn-guts rx))
-;   ((functionp rx) "[function]")
-   ((consp rx)
-    (let* ((open (substring " (" 1 2)) ;; use space before '(': Crash sensitive.
-           (rxlen (length rx))
-           (retv (concat open (stgr (car rx))))) ;; Recur on lkid/car.
-      (setq rx (cdr rx))
-      (while rx
-        (setq retv (concat retv " " (stgr (car rx)))) ;; Recur on lkid/car.
-        (setq rx (cdr rx)))
-      (concat retv ")")))
-   (t "[Unknown object]")))
+    ;;calculates distance
+    (defun calcDistance(o1 o2 n1 n2)
+    (let (x (- n2 o2)))
+    (let (y (- n1 o1)))
+    (x (abs x))   ;;abs may be unnecessary, put just incase
+    (y (abs y))
+    (x (* x x))
+    (y (* y y))
+    (calcDistance (+ x y))
+    )
+
+    ;;creates an open/closed list for the items.
+
+    (setf paths (make-array '(36 28)
+    :element-type '(boolean)
+    :initial-contents '(
+    (nil t t t nil nil nil nil nil t t t t t t t t t t nil nil nil nil nil nil t t t t t t t nil nil nil nil)                                   ;;(wall 1 3 5 10 6 7)
+    (nil t nil t t t nil nil nil t nil t nil nil nil nil nil nil t t t t t nil nil t nil t nil nil nil t t t nil nil)                           ;;(wall 1 1 1 3 3 1 1 1 6 5 2 1 1 1 3 3)
+    (t t t t nil t nil nil t t t t nil nil nil nil nil nil nil nil nil nil t t t t t t nil nil nil nil nil t nil nil)                           ;;(floor 4 1 1 2 4 10 6 5 1)
+    (t nil nil nil nil t nil nil t nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil t nil nil)   ;;(floor 1 4 1 2 1 24 1)
+    (t t t t nil t t nil t t t t nil t t t nil t t t nil nil t t t t t nil nil t t t t t nil nil)                                               ;;(floor 4 1 2 1 4 1 3 1 3 2 5 2 5)
+    (nil t nil t nil nil t nil nil t nil t t t nil t t t nil nil nil t t nil nil nil t nil nil t nil t nil nil nil nil)                         ;;(wall 1 1 1 1 2 1 2 1 1 3 1 3 1 1 1 2 3 1 2 1 1 1)
+    (nil t t t nil nil t t nil t t t nil t nil nil nil t t t t t nil nil nil nil t nil nil t t t t t t nil)                                     ;;(wall 1 3 2 2 1 3 1 1 3 5 4 1 2 6)
+    (nil t nil nil nil nil nil t nil nil nil nil nil t nil nil nil nil nil nil nil nil nil nil nil nil t t t t nil nil nil nil t nil)           ;;(wall 1 1 5 1 5 1 12 4 4 1)
+    (nil t nil t t t nil t t t t t t t nil nil t t t t t t t nil nil nil nil nil nil nil nil nil nil nil t nil)                                 ;;(wall 1 1 1 3 1 7 2 7 11 1)
+    (t t nil t nil t t t nil t nil t nil nil nil nil t nil t nil t nil t nil nil nil nil nil nil nil nil nil nil nil t t)                       ;;(floor 2 1 1 1 3 1 1 1 1 4 1 1 1 1 1 1 1 11 2)
+    (t nil nil t t t nil nil nil t t t t t t t t t t nil t t t nil nil nil nil t t t t nil nil nil nil t)                                       ;;(floor 1 2 3 3 10 1 3 4 4 4 1)
+    (t nil nil t nil nil nil nil nil nil nil t mnil nil t nil nil nil nil nil nil t nil nil nil nil nil t nil nil t nil nil nil t t)            ;;(floor 1 2 1 7 1 2 1 6 1 5 1 2 1 3 2)
+    (t t t t nil t t t t t t t nil t t t nil t t t nil t nil nil nil t t t nil t t t nil nil t nil)                                             ;;(floor 4 1 7 1 3 1 3 1 1 3 3 1 3 2 1)
+    (t t nil nil nil t nil t nil nil nil nil nil t nil t nil t nil t t t nil nil nil t nil nil nil t nil t t t t t)                             ;;(floor 2 3 1 1 1 5 1 1 1 1 1 1 3 3 1 3 1 1 5)
+    (nil t nil nil t t t t nil nil nil nil nil t t t nil t t t nil nil nil nil nil t nil nil nil t t t nil nil nil t)                           ;;(wall 1 1 2 4 5 3 1 3 5 1 3 3 3 1)
+    (nil t nil nil t nil nil nil nil t t t nil nil t nil nil nil t nil nil nil nil nil nil t nil nil nil nil t nil nil nil nil t)               ;;(wall 1 1 2 1 4 3 2 1 3 1 6 1 4 1 4 1)
+    (nil t t nil t nil nil t t t nil t nil nil t t t t t nil nil nil t t t t t t nil nil t nil nil t t t)                                       ;;(wall 1 2 1 1 2 3 1 1 2 5 3 6 2 1 2 3)
+    (nil nil t nil t t nil t nil t t t nil nil nil nil nil nil nil nil nil nil t nil nil t nil t nil nil t nil nil t nil t)                     ;;(wall 2 1 1 2 1 1 1 3 10 1 2 1 1 1 2 1 2 1 1 1)
+    (nil nil t nil nil t nil t nil nil t nil nil nil nil t t t nil nil nil nil t nil nil t t t nil nil t t t t t t)                             ;;(wall 2 1 2 1 1 1 2 1 4 3 4 1 2 3 2 6)
+    (nil nil t nil nil t t t nil nil t nil nil nil nil t nil t nil t t t t nil nil t nil t nil nil t nil nil nil t nil)                         ;;(wall 2 1 2 3 2 1 4 1 1 1 1 4 2 1 1 1 2 1 3 1)
+    (nil t t t nil t nil nil t t t t nil t t t nil t nil t nil nil nil nil nil t nil t nil t t t nil t t t)                                     ;;(wall 1 3 1 1 2 4 1 3 1 1 1 1 5 1 1 1 1 3 1 3)
+    (nil t nil t t t nil nil t nil nil t t t nil t nil t t t t t t nil nil t nil t nil t nil t nil t nil t)                                     ;;(wall 1 1 1 3 2 1 2 3 1 1 1 6 2 1 1 1 1 1 1 1 1 1 1 1)
+    (nil t t t nil nil nil nil t t nil nil nil t t t nil nil nil nil t nil t nil t t nil t nil t t t nil t t t)                                 ;;(wall 1 3 4 2 3 3 4 1 1 1 1 2 1 1 1 3 1 3)
+    (nil t nil nil nil nil nil nil nil t nil nil nil nil t nil nil nil nil nil t t t nil t nil nil t nil t nil t nil nil nil nil)               ;;(wall 1 1 7 1 4 1 5 3 1 1 2 1 1 1 1 1)
+    (nil t t nil nil t t t nil t t t t nil t nil nil t t t nil nil nil nil t t nil t t t nil t nil t t t)                                       ;;(wall 1 2 2 3 1 4 1 1 2 3 4 2 1 3 1 1 1 3)
+    (nil nil t nil nil t nil t t t t nil t nil t nil nil t nil t t t t nil nil t nil nil nil nil nil t nil t nil t)                             ;;(wall 2 1 2 1 1 4 1 1 1 1 2 1 1 4 2 1 5 1 1 1 1 1)
+    (nil nil t t nil t t t nil nil t t t nil t t t t t t nil nil t t t t nil nil nil nil nil t t t t t)                                         ;;(wall 2 2 1 3 2 3 1 6 2 4 5 5)
+    (nil nil nil t t t nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil)                                 ;;(wall 3 3)
+    ))
+
+    ;;(write paths)
+    (setq hvalue (make-array '(36 28)))
+    (setq dvalue (make-array '(36 28)))
+    (setq gvalue (make-array '(36 28)))
+
+    ;;set h value
+    (dotimes (i 36)
+    (dotimes (j 28)
+    (if (paths[i j] = t);; if a path
+    (setf(hvalue[i j] (calcDistance(i j 0 1))));;set array to distance from start, hard set beggining point
+    (hvalue[i j] = nil);;if path is nil (a wall) then set hvalue to nil
+    )))
+
+    ;;set d value
+    (dotimes (i 36)
+    (dotimes (j 28)
+    (if (paths[i j] = t);; if a path
+    (setf(hvalue[i j]  (calcDistance(i j 36 27))));;set h value hard set end point
+    (dvalue[i j] = nil);;if path is nil (a wall) then set dvalue to nil
+    )))
+
+    ;;set g value
+    (dotimes (i 36)
+    (dotimes (j 28)
+    (if (paths[i j] = t);; if a path
+    (gvalue[i j] = (hvalue[i j] + dvalue[i j]));;do path things
+    (gvalue[i j] = nil);;if path is nil (a wall) then set gvalue to nil
+
+    )))
 
 </script>
 
+    
+<!-- ==================================================== stgr ==== -->
+<script type="text/lisp">
+    ;; CS: print fcn for Jathp (to console)
+    ;; Must create a print-string for the value.
+    ;; [CS: Crash sensitivity to dbl-quoted open, "("; needs leading space.]
+    (defun stgr (rx)
+    (cond
+    ((numberp rx) (concat "" rx))
+    ((null rx) "nil")
+    ((stringp rx) rx)
+    ((atom rx) (concat "" rx))
+    ((functionp rx) (fcn-guts rx))
+    ;   ((functionp rx) "[function]")
+    ((consp rx)
+    (let* ((open (substring " (" 1 2)) ;; use space before '(': Crash sensitive.
+    (rxlen (length rx))
+    (retv (concat open (stgr (car rx))))) ;; Recur on lkid/car.
+    (setq rx (cdr rx))
+    (while rx
+    (setq retv (concat retv " " (stgr (car rx)))) ;; Recur on lkid/car.
+    (setq rx (cdr rx)))
+    (concat retv ")")))
+    (t "[Unknown object]")))
+
+</script>
 <!-- =========================================== btn onclick =========== -->
-
 <!-- =========================================== End of page =========== -->
-
 <!-- ====================================================  ==== -->
 <script type="text/lisp">
 </script>
-
 <!-- ========================================================= logr ==== -->
 <script type="text/lisp">
-
-(defun logr (rx) ;; Shorter way to 'console.log in JS'.
-  (let ((log (method console "log")))
+    (defun logr (rx) ;; Shorter way to 'console.log in JS'.
+    (let ((log (method console "log")))
     (log (concat "lp: "(stgr rx))))) ;; Nicer to strigify the lisp expr first.
-;; tests
-(logr "hello logr") ;; Announces that itself is available.
-(logr logr) ;; Show example of what a Lisp fcn (AKA Lambda) looks like.
+    ;; tests
+    (logr "hello logr") ;; Announces that itself is available.
+    (logr logr) ;; Show example of what a Lisp fcn (AKA Lambda) looks like.
 </script>
-
 <!-- ====================================================== reverse ==== -->
 <script type="text/lisp">
-  (logr "Beg reverse =====")
-(defun reverse (rlist)
-  ;;"Return a list with the given elements in reverse order, or nil."
-  (if (consp rlist) ;; Else nil.
-      (let ((retv nil))
-        (while rlist
-          (setq retv (cons (car rlist) retv))
-          (setq rlist (cdr rlist)))
-        retv)))
-  (logr "End reverse =====")
+    (logr "Beg reverse =====")
+    (defun reverse (rlist)
+    ;;"Return a list with the given elements in reverse order, or nil."
+    (if (consp rlist) ;; Else nil.
+    (let ((retv nil))
+    (while rlist
+    (setq retv (cons (car rlist) retv))
+    (setq rlist (cdr rlist)))
+    retv)))
+    (logr "End reverse =====")
 </script>
-
 <!-- ========================================= lisp draw fn =========== -->
 <script type="text/lisp">
-;; Now Create simple draw fn & have P5 draw call it.
-(logr "Beg html lisp draw fn ==========")
-;; Use "jp-" prefix to avoid stepping on P5 fcns; namespace for the poor.
-;; ================================================== jp-rect ====
-(defun jp-rect (rx ry rwid rhgt) ;; x,y = upper-left corner pos, P5.
-  (js (concat "rect(" rx "," ry "," rwid "," rhgt ")" )))
+    ;; Now Create simple draw fn & have P5 draw call it.
+    (logr "Beg html lisp draw fn ==========")
+    ;; Use "jp-" prefix to avoid stepping on P5 fcns; namespace for the poor.
+    ;; ================================================== jp-rect ====
+    (defun jp-rect (rx ry rwid rhgt) ;; x,y = upper-left corner pos, P5.
+    (js (concat "rect(" rx "," ry "," rwid "," rhgt ")" )))
 
-;; ================================================== jp-circle ====
-(defun jp-circle (rx ry rdia) ;; x,y = center pos, P5.
-  (js (concat "circle(" rx "," ry "," rdia ")" )))
+    ;; ================================================== jp-circle ====
+    (defun jp-circle (rx ry rdia) ;; x,y = center pos, P5.
+    (js (concat "circle(" rx "," ry "," rdia ")" )))
 
-;; ================================================== jp-cell-rbg-sum ====
-(defun jp-pix-rbg-sum ( rx ry ) ;; rcx,rcy is upper-left cell corner pos.
-(let* ((za (logr (list "pix-rbg-sum: rx,ry = " rx ry)))
-         (px (+ 2 rx)) ;; Offset into cell.
-         (py (+ 2 ry))
-         (rbg-sum (js (concat "csjs_get_pixel_color_sum(" px "," py ")"))))
-    (logr (list "rx,ry,px,py,rbg-sum = " rx ry px py rbg-sum)) 
+    ;; ================================================== jp-cell-rbg-sum ====
+    (defun jp-pix-rbg-sum ( rx ry ) ;; rcx,rcy is upper-left cell corner pos.
+    (let* ((za (logr (list "pix-rbg-sum: rx,ry = " rx ry)))
+    (px (+ 2 rx)) ;; Offset into cell.
+    (py (+ 2 ry))
+    (rbg-sum (js (concat "csjs_get_pixel_color_sum(" px "," py ")"))))
+    (logr (list "rx,ry,px,py,rbg-sum = " rx ry px py rbg-sum))
     rbg-sum))
 
-;; ================================================== jp-draw-bot ====
-(def red-tiles '())
+    ;; ================================================== jp-draw-bot ====
+    (def red-tiles '())
 
-(defun set-black (rloc)
-  (let* ((known (member rloc red-tiles)))
-     (logr (list "known = " known))
-     (if known
-       (let ((pre-list (cdr (member rloc (reverse red-tiles)))))
-         (def red-tiles
-           (append (reverse pre-list) (cdr known)))))))
+    (defun set-black (rloc)
+    (let* ((known (member rloc red-tiles)))
+    (logr (list "known = " known))
+    (if known
+    (let ((pre-list (cdr (member rloc (reverse red-tiles)))))
+    (def red-tiles
+    (append (reverse pre-list) (cdr known)))))))
 
-(defun set-red (rloc)
-  (let* ((known (member rloc red-tiles)))
-     (logr (list "known = " known))
-     (if (not known)
-      (def red-tiles (cons rloc red-tiles)))))
+    (defun set-red (rloc)
+    (let* ((known (member rloc red-tiles)))
+    (logr (list "known = " known))
+    (if (not known)
+    (def red-tiles (cons rloc red-tiles)))))
 
-(defun jp-draw-bot ( )
-  (let* ((aaa (logr "Enter jp-draw-bot"))
-         (sz (js "g_grid.cell_size"))
-         (zin (- sz 2))
-         (botx (js "g_bot.x"))
-         (boty (js "g_bot.y"))
-         (xx (+ 1 (* sz botx)))
-         (yy (+ 1 (* sz boty)))
-         (pix (jp-pix-rbg-sum xx yy))
-         (sctrl (js "g_sctrl")))
+    (defun jp-draw-bot ( )
+    (let* ((aaa (logr "Enter jp-draw-bot"))
+    (sz (js "g_grid.cell_size"))
+    (zin (- sz 2))
+    (botx (js "g_bot.x"))
+    (boty (js "g_bot.y"))
+    (xx (+ 1 (* sz botx)))
+    (yy (+ 1 (* sz boty)))
+    (pix (jp-pix-rbg-sum xx yy))
+    (sctrl (js "g_sctrl")))
     ;(logr (stgr (list "draw sctrl,pix x,y =" sctrl pix xx yy )))
     (if (= 0 sctrl)
-        (let ( )
-          (js "stroke( 'gray' )" )
-          (js "fill(204, 102, 0)" ) ;;red
-          ;(logr "draw g_sctrl === 0" )
-          (jp-rect xx yy zin zin)
-          ;; Save red tile cell loc.
-          (set-red (list botx boty))
-          )
-      (let ( )
-        (js "stroke( 'gray' )" )
-        (js "fill( 'black' )")
-        ;(logr "draw g_sctrl !=== 1" )
-        ;;(jp-circle xx yy zin)
-        (set-black (list botx boty))
-        (jp-rect xx yy zin zin)) )
+    (let ( )
+    (js "stroke( 'gray' )" )
+    (js "fill(204, 102, 0)" ) ;;red
+    ;(logr "draw g_sctrl === 0" )
+    (jp-rect xx yy zin zin)
+    ;; Save red tile cell loc.
+    (set-red (list botx boty))
+    )
+    (let ( )
+    (js "stroke( 'gray' )" )
+    (js "fill( 'black' )")
+    ;(logr "draw g_sctrl !=== 1" )
+    ;;(jp-circle xx yy zin)
+    (set-black (list botx boty))
+    (jp-rect xx yy zin zin)) )
     (logr (list "red-tiles =" red-tiles))))
 
-;; ================================================== jp-get-tile-color ====
-(defun jp-get-tile-color (rx ry)
-  (let* ((sz (js "g_grid.cell_size"))
-         (px (+ 2 (* sz rx)))
-         (py (+ 2 (* sz ry))))
+    ;; ================================================== jp-get-tile-color ====
+    (defun jp-get-tile-color (rx ry)
+    (let* ((sz (js "g_grid.cell_size"))
+    (px (+ 2 (* sz rx)))
+    (py (+ 2 (* sz ry))))
     (logr (list "get-tile-color rx,ry =" rx ry))
     (logr (list "sz,px,py =" sz px py))
     (jp-pix-rbg-sum px py)))
 
-;; ================================================== jp-list-tile-cells ====
-;; List all tile-cells.
-(defun jp-list-tile-cells ()
-  (let ((aaa (logr "Enter jp-list-tile-cells"))
-        (xx 42)(iy 0)(leny 4)(ix 0)(lenx 2))
+    ;; ================================================== jp-list-tile-cells ====
+    ;; List all tile-cells.
+    (defun jp-list-tile-cells ()
+    (let ((aaa (logr "Enter jp-list-tile-cells"))
+    (xx 42)(iy 0)(leny 4)(ix 0)(lenx 2))
     (logr (list "list_fn called: xx =" xx))
     (setq cs-tiles nil)
     (logr (list "cs-tiles =" cs-tiles))
     (logr "Starting while ix.")
     (while (< ix lenx) ;; H shim >
-      (logr (list "ix,lenx = " ix lenx ))
-      (logr "Starting while iy.")
-      (while (< iy leny) ;; H shim >
-        (logr (list "iy,leny,xx = " iy leny xx ))
-        (logr (list "x,y,clr = " ix iy
-                    (jp-get-tile-color ix iy)))
-        (setq iy (+ 1 iy))
-        (setq xx (+ 1 xx)))
-      (logr "Ending while iy.")
-      (setq iy 0)
-      (setq ix (+ 1 ix)))
+    (logr (list "ix,lenx = " ix lenx ))
+    (logr "Starting while iy.")
+    (while (< iy leny) ;; H shim >
+    (logr (list "iy,leny,xx = " iy leny xx ))
+    (logr (list "x,y,clr = " ix iy
+    (jp-get-tile-color ix iy)))
+    (setq iy (+ 1 iy))
+    (setq xx (+ 1 xx)))
+    (logr "Ending while iy.")
+    (setq iy 0)
+    (setq ix (+ 1 ix)))
     (logr "Ending while ix.")
     ))
 
 
 
-;; ================================================== Setup l4j.draw_fn ====
-;; Build & Setup l4j.draw_fn(): a JP lisp fn callable from JS.
-;; NB, a JS global var isn't same as a JP global var.
-;;  so we/JP must get hands on the JS var via a js() call.
-;;  and we 
-(let* ((l4j (js "g_l4job"))
-       (fnx (lambda ( ) ;; Here's the JP lisp fn being built.
-              (let ()
-                  (jp-draw-bot))
-                ))
-       (fny (lambda ( )
-              (jp-list-tile-cells)))
-       (fnz (lambda ( )
-              (jp-zzdefg))))
-  (set l4j "draw_fn" (export fnx)) ;; Here, we install the JP fn on a JS obj.
-  (logr (list "g_l4job.draw_fn is set"))
-  (logr (list "g_l4job.draw_fn() = " (js "g_l4job.draw_fn")))
-  (set l4j "list_fn" (export fny))
-  (logr (list "g_l4job.list_fn is set"))
-  (set l4j "zzdefg_fn" (export fnz))
-  (logr (list "g_l4job.zzdefg_fn is set"))
-)
+    ;; ================================================== Setup l4j.draw_fn ====
+    ;; Build & Setup l4j.draw_fn(): a JP lisp fn callable from JS.
+    ;; NB, a JS global var isn't same as a JP global var.
+    ;;  so we/JP must get hands on the JS var via a js() call.
+    ;;  and we
+    (let* ((l4j (js "g_l4job"))
+    (fnx (lambda ( ) ;; Here's the JP lisp fn being built.
+    (let ()
+    (jp-draw-bot))
+    ))
+    (fny (lambda ( )
+    (jp-list-tile-cells)))
+    (fnz (lambda ( )
+    (jp-zzdefg))))
+    (set l4j "draw_fn" (export fnx)) ;; Here, we install the JP fn on a JS obj.
+    (logr (list "g_l4job.draw_fn is set"))
+    (logr (list "g_l4job.draw_fn() = " (js "g_l4job.draw_fn")))
+    (set l4j "list_fn" (export fny))
+    (logr (list "g_l4job.list_fn is set"))
+    (set l4j "zzdefg_fn" (export fnz))
+    (logr (list "g_l4job.zzdefg_fn is set"))
+    )
 
-;; ==================================================
-;; =================== New Maze Drawing Code ========
-;; ==================================================
+    ;; ==================================================
+    ;; =================== New Maze Drawing Code ========
+    ;; ==================================================
 
-;; ================================================== jp-draw-maze-row-run ====
-(defun jp-draw-maze-row-run ( rx-start ry rrow-run )
-  ;; "At row ry, column rx, draw the row given the row-run list."
-  (let* ((row-code (car rrow-run))
-         (row-sprite-id (if (eq 'wall row-code) 0 1)) ;; Select cell sprite. Ugly.
-         (runs (cdr rrow-run))
-         (run-cnt nil)
-         (cell-x rx-start))
+    ;; ================================================== jp-draw-maze-row-run ====
+    (defun jp-draw-maze-row-run ( rx-start ry rrow-run )
+    ;; "At row ry, column rx, draw the row given the row-run list."
+    (let* ((row-code (car rrow-run))
+    (row-sprite-id (if (eq 'wall row-code) 0 1)) ;; Select cell sprite. Ugly.
+    (runs (cdr rrow-run))
+    (run-cnt nil)
+    (cell-x rx-start))
     (logr (list "jp-draw-maze-row-run " rx-start ry rrow-run))
     (while runs
-      (logr (list "drr runs " runs " row-sprite-id " row-sprite-id))
-      (setq run-cnt (car runs))
-      (setq runs (cdr runs)) ;; Adv.
-      (while ( != 0 run-cnt )
-        (logr (list "drr run-cnt " run-cnt))
-        (if (= 1 row-sprite-id) ;; Ugly, draws only #1 cell type.
-          (js (concat "draw_sprite_in_cell("
-                      row-sprite-id "," cell-x "," ry ")"
-                      )))
-        (setq run-cnt (- run-cnt 1)) ;; Adv.
-        (setq cell-x (+ 1 cell-x))) ;; Set for next cell.
-      (setq row-sprite-id (- 1 row-sprite-id)) ;; Toggle for next row. Ugly.
-      )))
-        
-;; ================================================== jp-draw-maze ====
-(defun jp-draw-maze ( rrow-runs )
+    (logr (list "drr runs " runs " row-sprite-id " row-sprite-id))
+    (setq run-cnt (car runs))
+    (setq runs (cdr runs)) ;; Adv.
+    (while ( != 0 run-cnt )
+    (logr (list "drr run-cnt " run-cnt))
+    (if (= 1 row-sprite-id) ;; Ugly, draws only #1 cell type.
+    (js (concat "draw_sprite_in_cell("
+    row-sprite-id "," cell-x "," ry ")"
+    )))
+    (setq run-cnt (- run-cnt 1)) ;; Adv.
+    (setq cell-x (+ 1 cell-x))) ;; Set for next cell.
+    (setq row-sprite-id (- 1 row-sprite-id)) ;; Toggle for next row. Ugly.
+    )))
+
+    ;; ================================================== jp-draw-maze ====
+    (defun jp-draw-maze ( rrow-runs )
     ;; "Draw the maze cells given the row-runs structure."
-  (let* ((rx-start 0) ;; Never changes.  Always start at left.
-         (ry-start 0) ;; Row #.
-         (row-run nil))
+    (let* ((rx-start 0) ;; Never changes.  Always start at left.
+    (ry-start 0) ;; Row #.
+    (row-run nil))
     (while rrow-runs
-      (setq row-run (car rrow-runs))
-      (setq rrow-runs (cdr rrow-runs)) ;; Adv.
-      (logr (list "jp-draw-maze ry " ry-start ))
-      (jp-draw-maze-row-run rx-start ry-start row-run)
-      (setq ry-start (+ 1 ry-start)) ;; Set for next row.
-      )))
-    
-;; ================================================== maze1-row-runs ====
-;; Maze row-runs structure.
-;;   Each row = (starting-cell-type . run-counts)
-;;   Run-counts = 1st-cell-type-count, 2nd-cell-type-cnt, 1st-cell-type-cnt, etc.
-(def maze1-row-runs ;; Maze for BestFS project #1.
-'(
- (wall 1 3 5 10 6 7)
- (wall 1 1 1 3 3 1 1 1 6 5 2 1 1 1 3 3)
- (floor 4 1 1 2 4 10 6 5 1)
- (floor 1 4 1 2 1 24 1)
- (floor 4 1 2 1 4 1 3 1 3 2 5 2 5)
- (wall 1 1 1 1 2 1 2 1 1 3 1 3 1 1 1 2 3 1 2 1 1 1)
- (wall 1 3 2 2 1 3 1 1 3 5 4 1 2 6)
- (wall 1 1 5 1 5 1 12 4 4 1)
- (wall 1 1 1 3 1 7 2 7 11 1)
- (floor 2 1 1 1 3 1 1 1 1 4 1 1 1 1 1 1 1 11 2)
- (floor 1 2 3 3 10 1 3 4 4 4 1)
- (floor 1 2 1 7 1 2 1 6 1 5 1 2 1 3 2)
- (floor 4 1 7 1 3 1 3 1 1 3 3 1 3 2 1)
- (floor 2 3 1 1 1 5 1 1 1 1 1 1 3 3 1 3 1 1 5)
- (wall 1 1 2 4 5 3 1 3 5 1 3 3 3 1)
- (wall 1 1 2 1 4 3 2 1 3 1 6 1 4 1 4 1)
- (wall 1 2 1 1 2 3 1 1 2 5 3 6 2 1 2 3) ;;
- (wall 2 1 1 2 1 1 1 3 10 1 2 1 1 1 2 1 2 1 1 1)
- (wall 2 1 2 1 1 1 2 1 4 3 4 1 2 3 2 6)
- (wall 2 1 2 3 2 1 4 1 1 1 1 4 2 1 1 1 2 1 3 1)
- (wall 1 3 1 1 2 4 1 3 1 1 1 1 5 1 1 1 1 3 1 3)
- (wall 1 1 1 3 2 1 2 3 1 1 1 6 2 1 1 1 1 1 1 1 1 1 1 1)
- (wall 1 3 4 2 3 3 4 1 1 1 1 2 1 1 1 3 1 3)
- (wall 1 1 7 1 4 1 5 3 1 1 2 1 1 1 1 1)
- (wall 1 2 2 3 1 4 1 1 2 3 4 2 1 3 1 1 1 3)
- (wall 2 1 2 1 1 4 1 1 1 1 2 1 1 4 2 1 5 1 1 1 1 1)
- (wall 2 2 1 3 2 3 1 6 2 4 5 5)
- (wall 3 3)))
+    (setq row-run (car rrow-runs))
+    (setq rrow-runs (cdr rrow-runs)) ;; Adv.
+    (logr (list "jp-draw-maze ry " ry-start ))
+    (jp-draw-maze-row-run rx-start ry-start row-run)
+    (setq ry-start (+ 1 ry-start)) ;; Set for next row.
+    )))
 
-;; tests
-;;(jp-draw-maze-row-run 0 0 '(wall 1 3 5 10 6 7))
+    ;; ================================================== maze1-row-runs ====
+    ;; Maze row-runs structure.
+    ;;   Each row = (starting-cell-type . run-counts)
+    ;;   Run-counts = 1st-cell-type-count, 2nd-cell-type-cnt, 1st-cell-type-cnt, etc.
+    (def maze1-row-runs ;; Maze for BestFS project #1.
+    '(
+    (wall 1 3 5 10 6 7)
+    (wall 1 1 1 3 3 1 1 1 6 5 2 1 1 1 3 3)
+    (floor 4 1 1 2 4 10 6 5 1)
+    (floor 1 4 1 2 1 24 1)
+    (floor 4 1 2 1 4 1 3 1 3 2 5 2 5)
+    (wall 1 1 1 1 2 1 2 1 1 3 1 3 1 1 1 2 3 1 2 1 1 1)
+    (wall 1 3 2 2 1 3 1 1 3 5 4 1 2 6)
+    (wall 1 1 5 1 5 1 12 4 4 1)
+    (wall 1 1 1 3 1 7 2 7 11 1)
+    (floor 2 1 1 1 3 1 1 1 1 4 1 1 1 1 1 1 1 11 2)
+    (floor 1 2 3 3 10 1 3 4 4 4 1)
+    (floor 1 2 1 7 1 2 1 6 1 5 1 2 1 3 2)
+    (floor 4 1 7 1 3 1 3 1 1 3 3 1 3 2 1)
+    (floor 2 3 1 1 1 5 1 1 1 1 1 1 3 3 1 3 1 1 5)
+    (wall 1 1 2 4 5 3 1 3 5 1 3 3 3 1)
+    (wall 1 1 2 1 4 3 2 1 3 1 6 1 4 1 4 1)
+    (wall 1 2 1 1 2 3 1 1 2 5 3 6 2 1 2 3) ;;
+    (wall 2 1 1 2 1 1 1 3 10 1 2 1 1 1 2 1 2 1 1 1)
+    (wall 2 1 2 1 1 1 2 1 4 3 4 1 2 3 2 6)
+    (wall 2 1 2 3 2 1 4 1 1 1 1 4 2 1 1 1 2 1 3 1)
+    (wall 1 3 1 1 2 4 1 3 1 1 1 1 5 1 1 1 1 3 1 3)
+    (wall 1 1 1 3 2 1 2 3 1 1 1 6 2 1 1 1 1 1 1 1 1 1 1 1)
+    (wall 1 3 4 2 3 3 4 1 1 1 1 2 1 1 1 3 1 3)
+    (wall 1 1 7 1 4 1 5 3 1 1 2 1 1 1 1 1)
+    (wall 1 2 2 3 1 4 1 1 2 3 4 2 1 3 1 1 1 3)
+    (wall 2 1 2 1 1 4 1 1 1 1 2 1 1 4 2 1 5 1 1 1 1 1)
+    (wall 2 2 1 3 2 3 1 6 2 4 5 5)
+    (wall 3 3)))
 
-;; ================================================== Call jp-draw-maze ====
-(jp-draw-maze maze1-row-runs) ;; Draw the maze on the grid.
+    ;; tests
+    ;;(jp-draw-maze-row-run 0 0 '(wall 1 3 5 10 6 7))
 
-(logr "End html lisp draw fn ==========")
+    ;; ================================================== Call jp-draw-maze ====
+    (jp-draw-maze maze1-row-runs) ;; Draw the maze on the grid.
+
+    (logr "End html lisp draw fn ==========")
 
 </script>
-
 
 </html>
