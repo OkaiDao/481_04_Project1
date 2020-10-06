@@ -64,7 +64,7 @@ function setup( ) // P5 Setup Fcn
     g_grid = { cell_size:28, wid:36, hgt:28 };
     g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
     g_frame_mod = 6; // Update ever 'mod' frames.
-    g_stop = 1; // Go by default.
+    g_stop = 0; // Go by default.
     g_sctrl = 0;
     g_l4job = { id:1 };
 
@@ -81,7 +81,7 @@ function setup( ) // P5 Setup Fcn
     console.log( "p5 End P5 setup =====" );
 }
 
-var g_bot = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
+var g_bot = { dir:3, x:0, y:0, color:100 }; // Dir is 0..7 clock, w 0 up.
 
 
 // ==================================================
@@ -135,21 +135,6 @@ function csjs_get_pixel_color_sum( rx, ry )
     return sum;
 }
 
-function move_bot_to_mouse( )
-{
-    let x = mouseX;
-    let y = mouseY;
-    //console.log( "p5 move_bot: x,y = " + x + "," + y );
-    let cz = g_grid.cell_size;
-    let gridx = floor( x / cz );
-    let gridy = floor( y / cz );
-    //console.log( "p5 move_bot: gridx,y,cz = " + gridx + "," + gridy + ", " +cz );
-    g_bot.x = gridx + g_grid.wid; // Ensure it's positive.
-    g_bot.x %= g_grid.wid; // Wrap to fit box.
-    g_bot.y = gridy + g_grid.hgt;
-    g_bot.y %= g_grid.hgt;
-}
-
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     
@@ -159,7 +144,6 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         && (0 == g_frame_cnt % g_frame_mod))
     {
         //console.log( "p5 draw" );
-        move_bot_to_mouse( );
         draw_update( );
     }
     // OBE:
