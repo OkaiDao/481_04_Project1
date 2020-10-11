@@ -1,11 +1,12 @@
-<!DOCTYPE html>    <!-- this is a HTML comment -->    <!--  -->
-<html lang="">    <!-- HTML page begs/ends w 'html' tag -->
-  <head>    <!-- HTML page has 'head'section and 'body' section -->
+﻿<!DOCTYPE html> 
+<html lang = "">
+  <head>	  
     <meta foo="Time-stamp: <2020-09-20 22:42:25 Chuck Siska>">
     <!-- ================================================ Mods ====
      o- 2020-02-09 22:18:17: add btn onclick exported fn
      o- 2020-02-10 17:22:23: log btn onclick
      o- 2020-09-20 22:41:05; Add maze & supt drawing fns
+	 o- 2020-09-27 17:42:23; Added team information, cleaned up comments, and began implementing A*
     .-->
     <!--
         Some code, mod'd, from "Introducing JavaScript Game Development" by Stuart.
@@ -22,14 +23,14 @@
     <script type="text/javascript" src="Jathp.js"></script>    <!-- Load Jathp -->
 
   </head>
-  <body>	 <!-- HTML page body-->
-	<h1>CPSC 481 Project 1 -- A Star Search</h1> <!--header title-->
+  <body bgcolor="#666666">
+	<h1>CPSC 481 Project 1 -- A Star Search</h1> 
 	<p>	
-	Team Ook Ook.
+	Team Ook Ook<br>-Name1-, -Name2-, -Name3-, Thomas Clark
 	<p>    <!-- Step Counter -->
     	Bot's Tiles Count's:
 	<p id="bot_tiles_count">    <!-- bot's tiles count's -->
-  </body>    <!-- HTML display page ends here -->
+  </body>
 
 <script src="assets/draw-stuff.js"></script> <!-- Load some JS fcns in a file -->
 
@@ -147,13 +148,13 @@
 
 </script>
 
-
 <!-- ==================================================================== -->
 <script type="text/lisp">
 (defun msg (rlist) ;; Create webpage popup alert/msg.
   (list
     (message (concat "msg: " rlist ))))
 </script>
+
 
 
 <!-- ==================================================== stgr ==== -->
@@ -182,15 +183,7 @@
 
 </script>
 
-<!-- =========================================== btn onclick =========== -->
-
-<!-- =========================================== End of page =========== -->
-
-<!-- ====================================================  ==== -->
-<script type="text/lisp">
-</script>
-
-<!-- ========================================================= logr ==== -->
+<!-- =============================================== logr ==== -->
 <script type="text/lisp">
 
 (defun logr (rx) ;; Shorter way to 'console.log in JS'.
@@ -201,9 +194,9 @@
 (logr logr) ;; Show example of what a Lisp fcn (AKA Lambda) looks like.
 </script>
 
-<!-- ====================================================== reverse ==== -->
+<!-- ============================================ reverse ==== -->
 <script type="text/lisp">
-  (logr "Beg reverse =====")
+  ;(logr "Beg reverse =====")
 (defun reverse (rlist)
   ;;"Return a list with the given elements in reverse order, or nil."
   (if (consp rlist) ;; Else nil.
@@ -212,13 +205,37 @@
           (setq retv (cons (car rlist) retv))
           (setq rlist (cdr rlist)))
         retv)))
-  (logr "End reverse =====")
+  ;(logr "End reverse =====")
+</script>
+
+<script type="text/lisp">
+(defun getX ()
+	(let ()(js "g_bot.x"))
+)
+
+(defun getY()
+	(let ()(js "g_bot.y"))
+)
+
+;;=====Find Start/End --------------{}{}{}{}{}{}{}}{}{}{}{}{}{}{}||||||||||||||||||||||||||||||
+(setq startPos '(0 1))
+(setq endPos '(35 26))
+(def workingPath (list 0 (car startPos) (cadr startPos)))
+;(logr workingPath)
+(def nextUp (list 0 (- (car endPos) (car startPos)) (- (cdr endPos) (cdr startPos))))
+;(logr nextUp)
+(def workingPath(list workingPath nextUp))
+(logr workingPath)
+
+;;=====Find pathRight -------------- Always check RIGHT&DOWN first, then left&up
+
 </script>
 
 <!-- ========================================= lisp draw fn =========== -->
 <script type="text/lisp">
 ;; Now Create simple draw fn & have P5 draw call it.
 (logr "Beg html lisp draw fn ==========")
+
 ;; Use "jp-" prefix to avoid stepping on P5 fcns; namespace for the poor.
 ;; ================================================== jp-rect ====
 (defun jp-rect (rx ry rwid rhgt) ;; x,y = upper-left corner pos, P5.
@@ -226,7 +243,7 @@
 
 ;; ================================================== jp-circle ====
 (defun jp-circle (rx ry rdia) ;; x,y = center pos, P5.
-  (js (concat "circle(" rx "," ry "," rdia ")" )))
+  (js (concat "circle(" ( + rx (/ rdia 2)) "," (+ ry (/ rdia 2)) "," rdia ")" )))
 
 ;; ================================================== jp-cell-rbg-sum ====
 (defun jp-pix-rbg-sum ( rx ry ) ;; rcx,rcy is upper-left cell corner pos.
@@ -234,15 +251,18 @@
          (px (+ 2 rx)) ;; Offset into cell.
          (py (+ 2 ry))
          (rbg-sum (js (concat "csjs_get_pixel_color_sum(" px "," py ")"))))
-    (logr (list "rx,ry,px,py,rbg-sum = " rx ry px py rbg-sum)) 
+    ;(logr (list "rx,ry,px,py,rbg-sum = " rx ry px py rbg-sum)) 
     rbg-sum))
+
+
+
 
 ;; ================================================== jp-draw-bot ====
 (def red-tiles '())
 
 (defun set-black (rloc)
   (let* ((known (member rloc red-tiles)))
-     (logr (list "known = " known))
+    ; (logr (list "known = " known))
      (if known
        (let ((pre-list (cdr (member rloc (reverse red-tiles)))))
          (def red-tiles
@@ -250,9 +270,27 @@
 
 (defun set-red (rloc)
   (let* ((known (member rloc red-tiles)))
-     (logr (list "known = " known))
+    ; (logr (list "known = " known))
      (if (not known)
       (def red-tiles (cons rloc red-tiles)))))
+	  
+(defun penNoFill ()
+	(js "noFill()")
+)
+
+(defun penRed ()
+	(js "fill(204, 10, 0)")
+)
+
+(defun penBlack ()
+	(js "fill(0, 0, 0)")
+)
+
+(defun penGreen ()
+	(js "fill(0, 200, 0)")
+)
+
+;;Clear the floor - (jp-draw-maze maze1-row-runs)
 
 (defun jp-draw-bot ( )
   (let* ((aaa (logr "Enter jp-draw-bot"))
@@ -265,10 +303,10 @@
          (pix (jp-pix-rbg-sum xx yy))
          (sctrl (js "g_sctrl")))
     ;(logr (stgr (list "draw sctrl,pix x,y =" sctrl pix xx yy )))
-    (if (= 0 sctrl)
+    (if (< 0 pix)
         (let ( )
           (js "stroke( 'gray' )" )
-          (js "fill(204, 102, 0)" ) ;;red
+          (penGreen)
           ;(logr "draw g_sctrl === 0" )
           (jp-rect xx yy zin zin)
           ;; Save red tile cell loc.
@@ -276,20 +314,20 @@
           )
       (let ( )
         (js "stroke( 'gray' )" )
-        (js "fill( 'black' )")
+        (penRed)
         ;(logr "draw g_sctrl !=== 1" )
-        ;;(jp-circle xx yy zin)
+        (jp-circle xx yy (js "g_grid.cell_size"))
         (set-black (list botx boty))
-        (jp-rect xx yy zin zin)) )
-    (logr (list "red-tiles =" red-tiles))))
+        ))
+  ;  (logr (list "red-tiles =" red-tiles))))
 
 ;; ================================================== jp-get-tile-color ====
 (defun jp-get-tile-color (rx ry)
   (let* ((sz (js "g_grid.cell_size"))
          (px (+ 2 (* sz rx)))
          (py (+ 2 (* sz ry))))
-    (logr (list "get-tile-color rx,ry =" rx ry))
-    (logr (list "sz,px,py =" sz px py))
+   ; (logr (list "get-tile-color rx,ry =" rx ry))
+   ; (logr (list "sz,px,py =" sz px py))
     (jp-pix-rbg-sum px py)))
 
 ;; ================================================== jp-list-tile-cells ====
@@ -297,48 +335,47 @@
 (defun jp-list-tile-cells ()
   (let ((aaa (logr "Enter jp-list-tile-cells"))
         (xx 42)(iy 0)(leny 4)(ix 0)(lenx 2))
-    (logr (list "list_fn called: xx =" xx))
+    ;(logr (list "list_fn called: xx =" xx))
     (setq cs-tiles nil)
-    (logr (list "cs-tiles =" cs-tiles))
-    (logr "Starting while ix.")
+    ;(logr (list "cs-tiles =" cs-tiles))
+    ;(logr "Starting while ix.")
     (while (< ix lenx) ;; H shim >
-      (logr (list "ix,lenx = " ix lenx ))
-      (logr "Starting while iy.")
+     ; (logr (list "ix,lenx = " ix lenx ))
+     ; (logr "Starting while iy.")
       (while (< iy leny) ;; H shim >
-        (logr (list "iy,leny,xx = " iy leny xx ))
-        (logr (list "x,y,clr = " ix iy
+     ;   (logr (list "iy,leny,xx = " iy leny xx ))
+     ;   (logr (list "x,y,clr = " ix iy
                     (jp-get-tile-color ix iy)))
         (setq iy (+ 1 iy))
         (setq xx (+ 1 xx)))
-      (logr "Ending while iy.")
+     ; (logr "Ending while iy.")
       (setq iy 0)
       (setq ix (+ 1 ix)))
-    (logr "Ending while ix.")
+    ;(logr "Ending while ix.")
     ))
 
-
-
+(defun jp-zzdefg ()
+	(if (< (js "g_bot.x") (js "g_grid.wid")) (js "g_bot.x += 1")
+		(js "g_bot.x=0, g_bot.y += 1") )
+	)
+)
+</script>
+<script type="text/lisp">
 ;; ================================================== Setup l4j.draw_fn ====
 ;; Build & Setup l4j.draw_fn(): a JP lisp fn callable from JS.
-;; NB, a JS global var isn't same as a JP global var.
-;;  so we/JP must get hands on the JS var via a js() call.
-;;  and we 
+
 (let* ((l4j (js "g_l4job"))
        (fnx (lambda ( ) ;; Here's the JP lisp fn being built.
               (let ()
-                  (jp-draw-bot))
+                  (jp-draw-bot)(jp-zzdefg))
                 ))
        (fny (lambda ( )
               (jp-list-tile-cells)))
        (fnz (lambda ( )
               (jp-zzdefg))))
-  (set l4j "draw_fn" (export fnx)) ;; Here, we install the JP fn on a JS obj.
-  (logr (list "g_l4job.draw_fn is set"))
-  (logr (list "g_l4job.draw_fn() = " (js "g_l4job.draw_fn")))
+  (set l4j "draw_fn" (export fnx))
   (set l4j "list_fn" (export fny))
-  (logr (list "g_l4job.list_fn is set"))
   (set l4j "zzdefg_fn" (export fnz))
-  (logr (list "g_l4job.zzdefg_fn is set"))
 )
 
 ;; ==================================================
@@ -353,13 +390,13 @@
          (runs (cdr rrow-run))
          (run-cnt nil)
          (cell-x rx-start))
-    (logr (list "jp-draw-maze-row-run " rx-start ry rrow-run))
+    ;(logr (list "jp-draw-maze-row-run " rx-start ry rrow-run))
     (while runs
-      (logr (list "drr runs " runs " row-sprite-id " row-sprite-id))
+      ;(logr (list "drr runs " runs " row-sprite-id " row-sprite-id))
       (setq run-cnt (car runs))
       (setq runs (cdr runs)) ;; Adv.
       (while ( != 0 run-cnt )
-        (logr (list "drr run-cnt " run-cnt))
+        ;(logr (list "drr run-cnt " run-cnt))
         (if (= 1 row-sprite-id) ;; Ugly, draws only #1 cell type.
           (js (concat "draw_sprite_in_cell("
                       row-sprite-id "," cell-x "," ry ")"
@@ -378,7 +415,7 @@
     (while rrow-runs
       (setq row-run (car rrow-runs))
       (setq rrow-runs (cdr rrow-runs)) ;; Adv.
-      (logr (list "jp-draw-maze ry " ry-start ))
+      ;(logr (list "jp-draw-maze ry " ry-start ))
       (jp-draw-maze-row-run rx-start ry-start row-run)
       (setq ry-start (+ 1 ry-start)) ;; Set for next row.
       )))
@@ -424,9 +461,18 @@
 ;; ================================================== Call jp-draw-maze ====
 (jp-draw-maze maze1-row-runs) ;; Draw the maze on the grid.
 
+
 (logr "End html lisp draw fn ==========")
 
 </script>
 
+<script type="text/lisp">
+    (defun mathdoing (rx ry)
+    (let (x (- rx ry)))
+    (let (y (+ rx ry)))
+    (+ x y)
+    )
 
+    (logr (mathdoing 10 5))
+</script>
 </html>

@@ -22,10 +22,98 @@ var g_button2; // btn
 var g_color;
 var g_sctrl;
 var g_tiles;
-var b_tiles_count //bot's tiles count's
+var g_bot = {x:0, y:0};
 
-var g_l4job = { id:1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
+var g_l4job = { id: 1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
+var pathsArr = [
+    [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 ], //0
+    [ 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0 ],
+    [ 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0 ],
+    [ 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ],
+    [ 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0 ],
+    [ 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0 ], //5
+    [ 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0 ],
+    [ 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0 ],
+    [ 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ],
+    [ 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 ],
+    [ 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1 ], //10
+    [ 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1 ],
+    [ 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0 ],
+    [ 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1 ],
+    [ 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1 ],
+    [ 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ], //15
+    [ 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0 ],
+    [ 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 ], //20
+    [ 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ],
+    [ 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 ],
+    [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 ],
+    [ 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1 ], //25
+    [ 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 ],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
+hValues[36][28];
+dValues[36][28];
+gValues[36][28];
+
+//calculates distance 
+function distance( startX, startY, endX, endY)
+{
+    let tempX = endX - startX;
+    let tempY = endY - startY;
+
+    tempX = tempX * tempX;
+    tempY = tempY * tempY;
+    return (tempX + tempY);
+}
+
+//Calculates the h or g value depending on parameter given
+//takes x and y coodinate in begX/Y, takes array for paths, and array to add values into
+function values(begX, begY, walls, array)
+{
+    let x = 0;
+    let y = 0;
+    while (x < 36)
+    {
+        while (y < 28)
+        {
+            if (walls[x][y] === 0)    //If a wall skip
+            {
+                array[x][y] = null;
+            }
+            else
+            {
+                array[x][y] = distance(x, y, begX, begY);
+            }
+            y++;
+        }
+        y = 0;
+    }
+    x++;
+}
+
+function addArrays(aryV1, aryV2, arySet)
+{
+    while (x < 36)
+    {
+        while (y < 28)
+        {
+            if (aryV1[x][y] === null)
+            {
+                arySet[x][y] = null;
+            }
+            else
+            {
+                arySet[x][y] = aryV1[x][y] + aryV2[x][y];
+            }
+            y++;
+        }
+        x++;
+    }
+}
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
 
@@ -64,7 +152,7 @@ function setup( ) // P5 Setup Fcn
     g_grid = { cell_size:28, wid:36, hgt:28 };
     g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
     g_frame_mod = 6; // Update ever 'mod' frames.
-    g_stop = 1; // Go by default.
+    g_stop = 0; // Go by default.
     g_sctrl = 0;
     g_l4job = { id:1 };
 
@@ -77,11 +165,14 @@ function setup( ) // P5 Setup Fcn
     do_btn( ); //
     console.log( "p5 Load the image." );
     get_images( );
-	b_tiles_count = document.getElementById("bot_tiles_count"); //added bot's tiles count's
-    console.log( "p5 End P5 setup =====" );
-}
+    console.log("p5 End P5 setup =====");
 
-var g_bot = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
+    //Array Set Up
+    values(1, 0, pathsArr, hValues);
+    values(35, 25, pathsArr, dValues);
+    addArrays(gValues, hValues, dValues);
+
+}
 
 
 // ==================================================
@@ -106,7 +197,7 @@ function grid_to_pix( rx, ry ) // Cvt grid cell x,y to canvas x,y wrapped.
 
 function draw_sprite_in_cell( rsprite_id, rx, ry ) // wraps in x,y ifn.
 {
-    console.log( "(p5 draw_sprite_in_cell ", rsprite_id, rx, ry, " )" );
+    //console.log( "(p5 draw_sprite_in_cell ", rsprite_id, rx, ry, " )" );
     let sprite_ob = get_sprite_by_id( rsprite_id );
     let pix_ob = grid_to_pix( rx, ry );
     let ctx = g_p5_cnv.canvas.getContext( '2d' ); // get html toolbox to draw.
@@ -115,7 +206,7 @@ function draw_sprite_in_cell( rsprite_id, rx, ry ) // wraps in x,y ifn.
                      g_grid.cell_size, g_grid.cell_size,
                    pix_ob.x, pix_ob.y,
                      g_grid.cell_size, g_grid.cell_size );
-    console.log( "end draw_sprite_in_cell)" );
+    //console.log( "end draw_sprite_in_cell)" );
 }
 // ==================================================
 // =================== END New Maze Drawing Code ========
@@ -125,6 +216,7 @@ function draw_update()  // Update our display.
 {
     //console.log( "p5 Call g_l4job.draw_fn" );
     g_l4job.draw_fn( );
+
 }
 
 function csjs_get_pixel_color_sum( rx, ry )
@@ -133,21 +225,6 @@ function csjs_get_pixel_color_sum( rx, ry )
     let sum = acolors[ 0 ] + acolors[ 1 ] + acolors[ 2 ]; // Sum RGB.
     //dbg console.log( "color_sum = " + sum );
     return sum;
-}
-
-function move_bot_to_mouse( )
-{
-    let x = mouseX;
-    let y = mouseY;
-    //console.log( "p5 move_bot: x,y = " + x + "," + y );
-    let cz = g_grid.cell_size;
-    let gridx = floor( x / cz );
-    let gridy = floor( y / cz );
-    //console.log( "p5 move_bot: gridx,y,cz = " + gridx + "," + gridy + ", " +cz );
-    g_bot.x = gridx + g_grid.wid; // Ensure it's positive.
-    g_bot.x %= g_grid.wid; // Wrap to fit box.
-    g_bot.y = gridy + g_grid.hgt;
-    g_bot.y %= g_grid.hgt;
 }
 
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
@@ -159,7 +236,6 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         && (0 == g_frame_cnt % g_frame_mod))
     {
         //console.log( "p5 draw" );
-        move_bot_to_mouse( );
         draw_update( );
     }
     // OBE:
