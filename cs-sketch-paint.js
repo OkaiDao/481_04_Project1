@@ -290,6 +290,31 @@ function keyPressed( )
     console.log( "p5 mouseIsPressed = " + mouseIsPressed );
     if (g_stop) { noLoop(); } else {loop();}
 }
+
+
+// ==================================================
+// =================== IF THIS PART NEEDED TO USE PLEASE USE IT  ========
+// ==================================================
+/*
+class node {
+    constructor(x, y, f, g, h, parent) {
+        this.x = x;
+        this.y = y;
+        this.f = f;
+        this.g = g;
+        this.h = h;
+        this.parent = parent;
+    }
+}
+
+var openList = [];
+var goal = new node(35, 26, 0, 0, 0, 0);
+var start = new node(1, 0, 0, 0, 0, 0);
+var low = {index:0, nd:0};
+*/
+// ==================================================
+// =================== SUHRAB DID THIS PART ========
+// ==================================================
 function mousePressed()      
 {
     astar(start, goal);
@@ -388,7 +413,7 @@ function isGoal(current)
         return true;
     return false;
 }
-
+/*
 function successors(current)
 {
     var successor = [];
@@ -398,7 +423,7 @@ function successors(current)
     successor.push(new node(current.x - 1, current.y, 0, 0, 0, current));
     return successor
 }
-
+*/
 function calch(current, goal)
 {
     return Math.abs(current.x - goal.x) + Math.abs(current.y - goal.y);
@@ -430,3 +455,6 @@ function traceback(closed)
         last = last.parent;
     }
 }
+// ==================================================
+// =================== End to SUHRAB Part  ========
+// ==================================================
