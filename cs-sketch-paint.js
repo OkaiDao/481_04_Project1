@@ -22,10 +22,98 @@ var g_button2; // btn
 var g_color;
 var g_sctrl;
 var g_tiles;
-var b_tiles_count //bot's tiles count's
+var g_bot = {x:0, y:0};
 
-var g_l4job = { id:1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
+var g_l4job = { id: 1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
+var pathsArr = [
+    [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 ], //0
+    [ 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0 ],
+    [ 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0 ],
+    [ 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ],
+    [ 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0 ],
+    [ 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0 ], //5
+    [ 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0 ],
+    [ 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0 ],
+    [ 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ],
+    [ 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 ],
+    [ 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1 ], //10
+    [ 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1 ],
+    [ 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0 ],
+    [ 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1 ],
+    [ 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1 ],
+    [ 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ], //15
+    [ 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0 ],
+    [ 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 ], //20
+    [ 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ],
+    [ 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 ],
+    [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 ],
+    [ 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1 ],
+    [ 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1 ], //25
+    [ 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 ],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
+hValues[36][28];
+dValues[36][28];
+gValues[36][28];
+
+//calculates distance 
+function distance( startX, startY, endX, endY)
+{
+    let tempX = endX - startX;
+    let tempY = endY - startY;
+
+    tempX = tempX * tempX;
+    tempY = tempY * tempY;
+    return (tempX + tempY);
+}
+
+//Calculates the h or g value depending on parameter given
+//takes x and y coodinate in begX/Y, takes array for paths, and array to add values into
+function values(begX, begY, walls, array)
+{
+    let x = 0;
+    let y = 0;
+    while (x < 36)
+    {
+        while (y < 28)
+        {
+            if (walls[x][y] === 0)    //If a wall skip
+            {
+                array[x][y] = null;
+            }
+            else
+            {
+                array[x][y] = distance(x, y, begX, begY);
+            }
+            y++;
+        }
+        y = 0;
+    }
+    x++;
+}
+
+function addArrays(aryV1, aryV2, arySet)
+{
+    while (x < 36)
+    {
+        while (y < 28)
+        {
+            if (aryV1[x][y] === null)
+            {
+                arySet[x][y] = null;
+            }
+            else
+            {
+                arySet[x][y] = aryV1[x][y] + aryV2[x][y];
+            }
+            y++;
+        }
+        x++;
+    }
+}
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
 
@@ -64,7 +152,7 @@ function setup( ) // P5 Setup Fcn
     g_grid = { cell_size:28, wid:36, hgt:28 };
     g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
     g_frame_mod = 6; // Update ever 'mod' frames.
-    g_stop = 1; // Go by default.
+    g_stop = 0; // Go by default.
     g_sctrl = 0;
     g_l4job = { id:1 };
 
@@ -77,11 +165,14 @@ function setup( ) // P5 Setup Fcn
     do_btn( ); //
     console.log( "p5 Load the image." );
     get_images( );
-	b_tiles_count = document.getElementById("bot_tiles_count"); //added bot's tiles count's
-    console.log( "p5 End P5 setup =====" );
-}
+    console.log("p5 End P5 setup =====");
 
-var g_bot = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
+    //Array Set Up
+    values(1, 0, pathsArr, hValues);
+    values(35, 25, pathsArr, dValues);
+    addArrays(gValues, hValues, dValues);
+
+}
 
 
 // ==================================================
@@ -125,16 +216,16 @@ function draw_update()  // Update our display.
 {
     //console.log( "p5 Call g_l4job.draw_fn" );
     g_l4job.draw_fn( );
+
 }
 
 function csjs_get_pixel_color_sum( rx, ry )
 {
     let acolors = get( rx, ry ); // Get pixel color [RGBA] array.
     let sum = acolors[ 0 ] + acolors[ 1 ] + acolors[ 2 ]; // Sum RGB.
-    //dbg console.log( "color_sum = " + sum );
+    console.log( "color_sum = " + sum );
     return sum;
 }
-
 function move_bot_to_mouse( )
 {
     let x = mouseX;
@@ -149,7 +240,6 @@ function move_bot_to_mouse( )
     g_bot.y = gridy + g_grid.hgt;
     g_bot.y %= g_grid.hgt;
 }
-
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     
@@ -199,4 +289,144 @@ function keyPressed( )
     console.log( "p5 keyPressed: post g_stop = " + g_stop );
     console.log( "p5 mouseIsPressed = " + mouseIsPressed );
     if (g_stop) { noLoop(); } else {loop();}
+}
+function mousePressed()      
+{
+    astar(start, goal);
+}
+
+function isValid(pos)
+{
+    gridpos = grid_to_pix(pos.x, pos.y);
+    var color = get(gridpos.x + 2, gridpos.y + 2);
+    var sum  = color[ 0 ] + color[ 1 ] + color[ 2 ];
+    var valid = (pos.x <= 35 && pos.x >= 0 && pos.y <= 26 && pos.y >= 0 && sum == 315)
+    //console.log(valid);
+    return valid;
+}
+
+function astar(start, goal)
+{
+    openList.push(start);
+    var closedList = [];
+
+    while(openList.length != 0)
+    {
+        //console.log(openList[0]);
+        var q = lowestFVal();
+
+        //console.log(openList);
+
+        openList.splice(q.index, 1);
+        //console.log(openList);
+
+        console.log(q.nd);
+
+        var suctmp = successors(q.nd);
+
+        for(x in suctmp)
+        {
+            var item = suctmp[x];
+            //console.log(item);
+            if(isValid(item))
+            {
+                if(isGoal(item))
+                {
+                    console.log("Found the shortest path");
+                    goal.parent = item;
+                    traceback(closedList);
+                }
+                        
+                else if(!inClosed(item, closedList))
+                {
+                    var gNew = item.parent.g + 1;
+                    var hNew =  calch(item, goal);
+                    var fNew = gNew + hNew;
+
+                    if(item.f > fNew || !inOpen(item))
+                    {
+                        openList.push(item);
+                        item.f = fNew;
+                        item.g = gNew;
+                        item.h = hNew;
+                        item.parent = q.nd;
+                    }
+                }
+            }
+        }
+        closedList.push(q.nd);
+        //suctmp.forEach(checkSuccessors);
+    }
+}
+
+function inOpen(item)
+{
+    for(i in openList)
+    {
+        if(item.x == openList[i].x && item.y == openList[i].y)
+            return true;
+    }
+    return false;
+}
+
+function inClosed(current, closedList)
+{
+    //console.log("This started");
+    for(i in closedList)
+    {
+        //console.log(i);
+        if(current.x == closedList[i].x && current.y == closedList[i].y)
+            return true;
+        //console.log(bool);
+    }
+    return false;
+}
+
+function isGoal(current)
+{
+    if(current.x == goal.x && current.y ==goal.y)
+        return true;
+    return false;
+}
+
+function successors(current)
+{
+    var successor = [];
+    successor.push(new node(current.x, current.y - 1, 0, 0, 0, current));
+    successor.push(new node(current.x + 1, current.y, 0, 0, 0, current));
+    successor.push(new node(current.x, current.y + 1, 0, 0, 0, current));
+    successor.push(new node(current.x - 1, current.y, 0, 0, 0, current));
+    return successor
+}
+
+function calch(current, goal)
+{
+    return Math.abs(current.x - goal.x) + Math.abs(current.y - goal.y);
+}
+
+function lowestFVal()
+{
+    low.nd = openList[0];
+    low.f = openList[0].f;
+    low.index = 0;
+    for(i in openList)
+    {
+        if(low.f > openList[i].f)
+        {
+            low.nd = openList[i];
+            low.index = i;
+        }
+    }
+    return low;
+}
+
+function traceback(closed)
+{
+    last = goal;
+    while(last != start)
+    {
+        console.log(last);
+        draw_sprite_in_cell(0, last.x, last.y);
+        last = last.parent;
+    }
 }
