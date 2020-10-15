@@ -82,7 +82,7 @@ function setup( ) // P5 Setup Fcn
 }
 
 var g_bot = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
-
+var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
 
 // ==================================================
 // =================== New Maze Drawing Code ========
@@ -144,10 +144,17 @@ function move_bot_to_mouse( )
     let gridx = floor( x / cz );
     let gridy = floor( y / cz );
     //console.log( "p5 move_bot: gridx,y,cz = " + gridx + "," + gridy + ", " +cz );
-    g_bot.x = gridx + g_grid.wid; // Ensure it's positive.
-    g_bot.x %= g_grid.wid; // Wrap to fit box.
-    g_bot.y = gridy + g_grid.hgt;
-    g_bot.y %= g_grid.hgt;
+    //g_bot.x = gridx + g_grid.wid; // Ensure it's positive.
+    //g_bot.x %= g_grid.wid; // Wrap to fit box.
+    //g_bot.y = gridy + g_grid.hgt;
+    //g_bot.y %= g_grid.hgt;
+
+    g_bot.x = gridx + g_box.wid; // Ensure its positive.
+    g_bot.x %= g_box.wid; // Wrap to fit box.
+    g_bot.y = gridy + g_box.hgt;
+    g_bot.y %= g_box.hgt;
+    //console.log( "Call g_l4job.draw_fn for mousePressed" );
+    g_l4job.draw_fn( );
 }
 
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
