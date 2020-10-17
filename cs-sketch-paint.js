@@ -23,8 +23,8 @@ var g_color;
 var g_sctrl;
 var g_tiles;
 var g_bot = {x:0, y:0};
-
 var g_l4job = { id: 1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
+
 var pathsArr = [
     [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 ], //0
     [ 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0 ],
@@ -56,13 +56,9 @@ var pathsArr = [
     [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
 //Creates 2d Array
-const hValues = Array.from(Array(36), () => new Array(28));
-const dValues = Array.from(Array(36), () => new Array(28));
+//const hValues = Array.from(Array(36), () => new Array(28));
+//const dValues = Array.from(Array(36), () => new Array(28));
 const gValues = Array.from(Array(36), () => new Array(28));
-
-//const hValues[36][28];
-//const dValues[36][28];
-//const gValues[36][28];
 
 //calculates distance 
 function distance( startX, startY, endX, endY)
@@ -77,6 +73,7 @@ function distance( startX, startY, endX, endY)
 
 //Calculates the h or g value depending on parameter given
 //takes x and y coodinate in begX/Y, takes array for paths, and array to add values into
+/*
 function values(begX, begY, walls, array)
 {
     let x = 0;
@@ -96,10 +93,11 @@ function values(begX, begY, walls, array)
             y++;
         }
         y = 0;
+        x++;
     }
-    x++;
 }
-
+*/
+/*
 function addArrays(aryV1, aryV2, arySet)
 {
     while (x < 36)
@@ -117,8 +115,11 @@ function addArrays(aryV1, aryV2, arySet)
             y++;
         }
         x++;
+        y = 0;
     }
+    console.log("Finished adding arrays.");
 }
+*/
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
 
@@ -173,13 +174,37 @@ function setup( ) // P5 Setup Fcn
     console.log("p5 End P5 setup =====");
 
     //Array Set Up
+    //Filling g values
+    let x = 0;
+    let y = 0;
+
+    while (x < 36)
+    {
+        while (y < 28)
+        {
+            if (pathsArr === 0) {
+                gValues[x][y] = null;
+            }
+            else
+            {
+                let tempX = distance(0, 1, x, y);
+                let tempY = distance(36, 26, x, y);
+                gValues[x][y] = tempX + tempY;
+            }
+
+            y++;
+        }
+        x++;
+        y = 0;
+    }
+
+    /*
     values(1, 0, pathsArr, hValues);
     values(35, 25, pathsArr, dValues);
     addArrays(gValues, hValues, dValues);
+    */
 
-    console.log(hValues);
-    //console.log(dValues);
-    //console.log(gValues);
+    console.log(gValues);
 
 
 }
