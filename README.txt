@@ -21,11 +21,12 @@ How project build:
 
 Setup and Installation: N/A
 
-Contents: assets folder(styless.css, draw-stuff.js), sprite-cells-28x28-a.png, cs-sketch-paint.js, Jathp.js, p5.js, index-js-p5-jathp-5.html,  README.MD, Project Algorithm Report.pdf
+Contents: assets folder(styless.css, draw-stuff.js), sprite-cells-28x28-a.png, cs-sketch-paint.js, Jathp.js, p5.js, index-js-p5-jathp-5.html,  
+README.MD, Project Algorithm Report.pdf
 
 Features: the bot will starts from upper-left corner and makes its way down to the bottom right corner
-using the Manhattan metric as heuristic function H(N) and BestFS using F(N) with this heuristic H(N) is an A* algorithm, the bot leaves red brick floor tiles in which there are more than one
-paths on the path given.
+using the Manhattan metric as heuristic function H(N) and BestFS using F(N) with this heuristic H(N) is an A* algorithm, 
+the bot leaves red brick floor tiles in which there are more than one paths on the path given.
 
 External requirements: None
 
