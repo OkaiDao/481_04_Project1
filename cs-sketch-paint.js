@@ -25,7 +25,7 @@ var g_tiles;
 var g_bot = {x:0, y:0};
 var g_l4job = { id: 1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
 
-var pathsArr = [
+const pathsArr = [
     [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 ], //0
     [ 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0 ],
     [ 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0 ],
@@ -71,55 +71,6 @@ function distance( startX, startY, endX, endY)
     return (tempX + tempY);
 }
 
-//Calculates the h or g value depending on parameter given
-//takes x and y coodinate in begX/Y, takes array for paths, and array to add values into
-/*
-function values(begX, begY, walls, array)
-{
-    let x = 0;
-    let y = 0;
-    while (x < 36)
-    {
-        while (y < 28)
-        {
-            if (walls[x][y] === 0)    //If a wall skip
-            {
-                array[x][y] = null;
-            }
-            else
-            {
-                array[x][y] = distance(x, y, begX, begY);
-            }
-            y++;
-        }
-        y = 0;
-        x++;
-    }
-}
-*/
-/*
-function addArrays(aryV1, aryV2, arySet)
-{
-    while (x < 36)
-    {
-        while (y < 28)
-        {
-            if (aryV1[x][y] === null)
-            {
-                arySet[x][y] = null;
-            }
-            else
-            {
-                arySet[x][y] = aryV1[x][y] + aryV2[x][y];
-            }
-            y++;
-        }
-        x++;
-        y = 0;
-    }
-    console.log("Finished adding arrays.");
-}
-*/
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
 
@@ -174,15 +125,19 @@ function setup( ) // P5 Setup Fcn
     console.log("p5 End P5 setup =====");
 
     //Array Set Up
-    //Filling g values
+    //Filling G values
     let x = 0;
     let y = 0;
 
-    while (x < 36)
+    while (x < 28)
     {
-        while (y < 28)
+        while (y < 36)
         {
-            if (pathsArr === 0) {
+            let w = pathsArr[x][y];
+
+           // console.log(w);
+            if (w === 0)    //Didn't let me directly compare pathsArr[x][y];
+            {
                 gValues[x][y] = null;
             }
             else
@@ -191,24 +146,21 @@ function setup( ) // P5 Setup Fcn
                 let tempY = distance(36, 26, x, y);
                 gValues[x][y] = tempX + tempY;
             }
-
             y++;
         }
         x++;
         y = 0;
     }
-
-    /*
-    values(1, 0, pathsArr, hValues);
-    values(35, 25, pathsArr, dValues);
-    addArrays(gValues, hValues, dValues);
-    */
-
-    console.log(gValues);
-
+//    console.log(gValues);
+//    console.log(pathsArr);
 
 }
 
+function findEnd()
+{
+    let current = { x: 0, y: 1 };
+
+}
 
 // ==================================================
 // =================== New Maze Drawing Code ========
