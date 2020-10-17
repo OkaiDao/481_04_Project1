@@ -55,9 +55,14 @@ var pathsArr = [
     [ 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 ],
     [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
-hValues[36][28];
-dValues[36][28];
-gValues[36][28];
+//Creates 2d Array
+const hValues = Array.from(Array(36), () => new Array(28));
+const dValues = Array.from(Array(36), () => new Array(28));
+const gValues = Array.from(Array(36), () => new Array(28));
+
+//const hValues[36][28];
+//const dValues[36][28];
+//const gValues[36][28];
 
 //calculates distance 
 function distance( startX, startY, endX, endY)
@@ -171,6 +176,11 @@ function setup( ) // P5 Setup Fcn
     values(1, 0, pathsArr, hValues);
     values(35, 25, pathsArr, dValues);
     addArrays(gValues, hValues, dValues);
+
+    console.log(hValues);
+    //console.log(dValues);
+    //console.log(gValues);
+
 
 }
 
