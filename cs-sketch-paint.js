@@ -153,6 +153,7 @@ function setup( ) // P5 Setup Fcn
     }
     console.log(gValues);
     console.log(pathsArr);
+
 }
 
 function findEnd()
@@ -172,7 +173,7 @@ function findEnd()
         //set current to visited
         pathsArr[current.x][current.y] = 0;
         visitedList.push({ x: current.x, y: current.y });  //add to visited list
-                //***Call color visited function***
+        redCircle(current.x, current.y);        //***Call color visited function***
         //check all neighbor (Top Right Bottom Left)        
         checkNeighbors(xLoc, yLoc, lowAtr);
         lowLocX = lowAtr.x;
@@ -212,7 +213,7 @@ function backTrack()
     while (current.x != 1 && current.y != 0)
     {
         pathsList.push({ x: current.x, y: current.y });
-        //********Can call function to fill path here*****************
+        greenSquare(current.x, current.y);
         //check adjacent for visited
         xLoc = current.x;
         yLoc = current.y;
@@ -447,6 +448,21 @@ function draw_update()  // Update our display.
     //console.log( "p5 Call g_l4job.draw_fn" );
     g_l4job.draw_fn( );
 
+}
+
+function redCircle(xCoord, yCoord) {
+    let tempx = (xCoord * g_grid.cell_size) + (g_grid.cell_size / 2);
+    let tempy = (yCoord * g_grid.cell_size) + (g_grid.cell_size / 2);
+    let radius = g_grid.cell_size - 2;
+    fill(204, 10, 0);
+    circle(tempx, tempy, radius);
+}
+
+function greenSquare(xCoord, yCoord) {
+    let tempx = (xCoord * g_grid.cell_size);
+    let tempy = (yCoord * g_grid.cell_size);
+    fill(0, 200, 0);
+    rect(tempx, tempy, g_grid.wid, g_grid.hgt);
 }
 
 function csjs_get_pixel_color_sum( rx, ry )
