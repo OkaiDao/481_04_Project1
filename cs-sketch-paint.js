@@ -200,9 +200,103 @@ function findEnd()
 function backTrack()
 {
     let current = { x: 35, y: 26 };
+    var pathsList = [];
+    let lowLocX = 0;
+    let lowLocY = 0;
+    let lowestG = 0;
+    let currentG = 0;
+    let xLoc = current.x;
+    let yLoc = current.y;
 
-    
-}
+    //Look at closed paths
+    while (current.x != 1 && current.y != 0)
+    {
+        pathsList.push({ x: current.x, y: current.y });
+        //********Can call function to fill path here*****************
+        //check adjacent for visited
+        xLoc = current.x;
+        yLoc = current.y;
+        lowestG = 0;
+        //Left
+        if (xLoc - 1 >= 0)
+        {
+            if (checkVisited(xLoc - 1, yLoc))
+            {
+                if (gValues[xLoc-1][yLoc] != null) //A wall skip
+                {
+                    currentG = gValues[xLoc - 1][yLoc];
+                    lowestG = currentG;
+                }
+            }
+        }//EO Left
+
+        //Right
+        if (xLoc + 1 <= 35)
+        {
+            if (checkVisited(xLoc + 1, yLoc))
+            {
+                if (gValues[xLoc + 1][yLoc] != null) //A wall skip
+                {
+                    currentG = gValues[xLoc + 1][yLoc];
+                    if (currentG < lowestG) {
+                        lowestG = currentG;
+                        lowLocX = xLoc + 1;
+                        lowLocY = yLoc;
+                    }
+                    else if (lowestG === 0)
+                    {
+                        lowestG = currentG;
+                        lowLocX = xLoc + 1;
+                        lowLocY = yLoc;
+                    }
+                }
+            }
+        }//EO Right
+
+        //Down
+        if (yLoc + 1 <= 27) {
+            if (checkVisited(xLoc, yLoc + 1)) {
+                if (gValues[xLoc][yLoc + 1] != null) //A wall skip
+                {
+                    currentG = gValues[xLoc][yLoc + 1];
+                    if (currentG < lowestG) {
+                        lowestG = currentG;
+                        lowLocX = xLoc;
+                        lowLocY = yLoc + 1;
+                    }
+                    else if (lowestG === 0) {
+                        lowestG = currentG;
+                        lowLocX = xLoc + 1;
+                        lowLocY = yLoc;
+                    }
+                }
+            }
+        }//EO Down
+
+        //Up
+        if (yLoc - 1 >= 0) {
+            if (checkVisited(xLoc, yLoc - 1)) {
+                if (gValues[xLoc][yLoc - 1] != null) //A wall skip
+                {
+                    currentG = gValues[xLoc][yLoc - 1];
+                    if (currentG < lowestG) {
+                        lowestG = currentG;
+                        lowLocX = xLoc;
+                        lowLocY = yLoc - 1;
+                    }
+                    else if (lowestG === 0) {
+                        lowestG = currentG;
+                        lowLocX = xLoc + 1;
+                        lowLocY = yLoc;
+                    }
+                }
+            }
+        }//EO Up
+
+        current.x = lowLocX;
+        current.y = lowLocY;
+    }//EO while
+}//EO backTrack()
 
 function checkVisited(thisX, thisY)
 {
@@ -248,7 +342,7 @@ function checkNeighbors(xLoc, yLoc, lowAtr)
     }//EO Top Check
 
     //Left
-    if (current.y - 1 >= 0) {
+    if (yLoc - 1 >= 0) {
         movX = xLoc;
         movY = yLoc - 1;
         if (!checkVisited(movX, movY)) {
