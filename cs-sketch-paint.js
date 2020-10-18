@@ -58,7 +58,7 @@ const pathsArr = [
 //Creates 2d Array
 //const hValues = Array.from(Array(36), () => new Array(28));
 //const dValues = Array.from(Array(36), () => new Array(28));
-const gValues = Array.from(Array(36), () => new Array(28));
+const gValues = Array.from(Array(28), () => new Array(36));
 
 //calculates distance 
 function distance( startX, startY, endX, endY)
@@ -143,7 +143,7 @@ function setup( ) // P5 Setup Fcn
             else
             {
                 let tempX = distance(0, 1, x, y);
-                let tempY = distance(36, 26, x, y);
+                let tempY = distance(35, 26, x, y);
                 gValues[x][y] = tempX + tempY;
             }
             y++;
@@ -167,7 +167,7 @@ function findEnd()
     var visitedList = [];
     var lowAtr = {x: 0, y: 0, gVal: 0 }
 
-    while (current.x === 26 && current.y === 35)
+    while (current.x != 35 && current.y != 26)
     {
         //set current to visited
         pathsArr[current.x][current.y] = 0;
@@ -199,7 +199,9 @@ function findEnd()
 
 function backTrack()
 {
+    let current = { x: 35, y: 26 };
 
+    
 }
 
 function checkVisited(thisX, thisY)
@@ -266,7 +268,7 @@ function checkNeighbors(xLoc, yLoc, lowAtr)
     }//EO Left
 
     //Bottom
-    if (xLoc + 1 <= 27) {
+    if (xLoc + 1 <= 35) {
         movX = xLoc + 1;
         movY = yLoc;
         if (!checkVisited(movX, movY)) {
@@ -285,7 +287,7 @@ function checkNeighbors(xLoc, yLoc, lowAtr)
         }
     }//EO Bottom
     //Right
-    if (yLoc + 1 <= 35) {
+    if (yLoc + 1 <= 27) {
         movX = xLoc;
         movY = yLoc + 1;
         if (!checkVisited(movX, movY)) {
