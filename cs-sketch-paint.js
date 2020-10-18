@@ -151,17 +151,164 @@ function setup( ) // P5 Setup Fcn
         x++;
         y = 0;
     }
-//    console.log(gValues);
-//    console.log(pathsArr);
-
+    console.log(gValues);
+    console.log(pathsArr);
 }
 
 function findEnd()
 {
     let current = { x: 0, y: 1 };
+    let xLoc = current.x;
+    let yLoc = current.y;
+    let lowestGValue = 0;
+    let lowLocX = 0;
+    let lowLocY = 0;
+    //List of visited points
+    var visitedList = [];
+    var lowAtr = {x: 0, y: 0, gVal: 0 }
+
+    while (current.x === 26 && current.y === 35)
+    {
+        //set current to visited
+        pathsArr[current.x][current.y] = 0;
+        visitedList.push({ x: current.x, y: current.y });  //add to visited list
+                //***Call color visited function***
+        //check all neighbor (Top Right Bottom Left)        
+        checkNeighbors(xLoc, yLoc, lowAtr);
+        lowLocX = lowAtr.x;
+        lowLocY = lowAtr.y;
+        lowestGValue = lowAtr.gVal;
+        
+        let tempLeng = visitedList.length;
+        //check lowest adjacent node
+        for (i = 0; i < tempLeng; i++)
+        {
+            checkNeighbors(visitedList[i].x, visitedList[i].y, lowAtr);
+            if (lowestGValue > lowAtr.gVal)
+            {
+                lowLocX = lowAtr.x;
+                lowLocY = lowAtr.y;
+                lowestGValue = lowAtr.gVal;
+            }
+        }
+
+        current.x = lowLocX;
+        current.y = lowLocY;
+    }
+}//EO findEnd
+
+function backTrack()
+{
 
 }
 
+function checkVisited(thisX, thisY)
+{
+    if (pathsArr[thisX][thisY] === 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+function checkNeighbors(xLoc, yLoc, lowAtr)
+{
+    //Top
+    //Check if x is at the top, if so skip
+
+    let movX = xLoc;
+    let movY = yLoc;
+    let thisValue = 0;
+    let lowestGValue = 0;
+    let lowLocX = 0;
+    let lowLocY = 0;
+
+    if (xLoc - 1 >= 0) {
+        movX = xLoc - 1;
+        movY = yLoc;
+        if (!checkVisited(movX, movY)) {
+            thisValue = gValues[movX][movY];
+
+            if (lowestGValue === 0) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+            else if (thisValue < lowestGValue) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+        }
+    }//EO Top Check
+
+    //Left
+    if (current.y - 1 >= 0) {
+        movX = xLoc;
+        movY = yLoc - 1;
+        if (!checkVisited(movX, movY)) {
+            thisValue = gValues[movX][movY];
+
+            if (lowestGValue === 0) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+            else if (thisValue < lowestGValue) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+        }
+    }//EO Left
+
+    //Bottom
+    if (xLoc + 1 <= 27) {
+        movX = xLoc + 1;
+        movY = yLoc;
+        if (!checkVisited(movX, movY)) {
+            thisValue = gValues[movX][movY];
+
+            if (lowestGValue === 0) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+            else if (thisValue < lowestGValue) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+        }
+    }//EO Bottom
+    //Right
+    if (yLoc + 1 <= 35) {
+        movX = xLoc;
+        movY = yLoc + 1;
+        if (!checkVisited(movX, movY)) {
+            thisValue = gValues[movX][movY];
+
+            if (lowestGValue === 0) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+            else if (thisValue < lowestGValue) {
+                lowestGValue = thisValue;
+                lowLocX = movX;
+                lowLocY = movY;
+            }
+        }
+    }//EO Right
+
+    lowAtr.x = lowLocX;
+    lowAtr.y = lowLocY;
+    lowAtr.gVal = lowestGValue;
+
+}
 // ==================================================
 // =================== New Maze Drawing Code ========
 // ==================================================
