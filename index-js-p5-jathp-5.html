@@ -28,7 +28,7 @@
 	<p>	
 	Team Ook Ook<br>Jonathan Dao, Thomas Clark
 	<p>    <!-- Step Counter -->
-    	Bot's Tiles Count's:
+    	Bot's Tiles Count's: <script type="text/lisp">(js "g_frame_cnt;")</script>
 	<p id="bot_tiles_count">    <!-- bot's tiles count's -->
   </body>
 
@@ -264,7 +264,7 @@
 )
 
 (defun penGreen ()
-	(js "fill(0, 200, 0)")
+	(js "fill(35, 255, 35)")
 )
 
 (defun penYellow ()
@@ -481,6 +481,9 @@
 ;;---------------GET h() value!
 (defun getH (arx ary)
   (+ (- (car endPos) arx) (- (cadr endPos) ary)))
+  
+ (defun getG (arx ary)
+  (+ (* (- arx (car startPos)) (- arx (car startPos))) (* (- ary (cadr startPos)) (- ary (cadr startPos)))))
 
 (greenRect (car startPos) (cadr startPos))
 (def workingPath (list(list 0 (car startPos) (cadr startPos))))
@@ -503,72 +506,80 @@
 
 (defun checkRight () 
 	(if (< 0 (jp-pix-rbg-sum (* (+ (cadar workingPath) 1) gridSz) (* (caddar workingPath) gridSz)))
-		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (+ gVal 1) (getH (+ (cadar workingPath) 1) (caddar workingPath))) (+ (cadar workingPath) 1) (caddar workingPath))))
+		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (getG (+ (cadar workingPath) 1) (caddar workingPath)) (getH (+ (cadar workingPath) 1) (caddar workingPath))) (+ (cadar workingPath) 1) (caddar workingPath))))
 		)(fixNext)(yellowcircle (+ (cadar workingPath) 1) (caddar workingPath)))
 	)
 )
 
 (defun checkDown () 
 	(if (< 0 (jp-pix-rbg-sum (* (cadar workingPath) gridSz) (* (+ (caddar workingPath) 1) gridSz)))
-		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (+ gVal 1) (getH (cadar workingPath) (+ (caddar workingPath) 1))) (cadar workingPath) (+ (caddar workingPath) 1))))
+		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (getG (cadar workingPath) (+ (caddar workingPath) 1)) (getH (cadar workingPath) (+ (caddar workingPath) 1))) (cadar workingPath) (+ (caddar workingPath) 1))))
 		)(fixNext)(yellowcircle (cadar workingPath) (+ (caddar workingPath) 1)))
 	)
 )
 
 (defun checkLeft () 
 	(if (< 0 (jp-pix-rbg-sum (* (- (cadar workingPath) 1) gridSz) (* (caddar workingPath) gridSz)))
-		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (+ gVal 1) (getH (- (cadar workingPath) 1) (caddar workingPath))) (- (cadar workingPath) 1) (caddar workingPath))))
+		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (getG (- (cadar workingPath) 1) (caddar workingPath)) (getH (- (cadar workingPath) 1) (caddar workingPath))) (- (cadar workingPath) 1) (caddar workingPath))))
 		)(fixNext)(yellowcircle (- (cadar workingPath) 1) (caddar workingPath)))
 	)
 )
 
 (defun checkUp () 
 	(if (< 0 (jp-pix-rbg-sum (* (cadar workingPath) gridSz) (* (- (caddar workingPath) 1) gridSz)))
-		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (+ gVal 1) (getH (cadar workingPath) (- (caddar workingPath) 1))) (cadar workingPath) (- (caddar workingPath) 1))))
+		(let* ()(fixNext)(def nextUp (append nextUp(list(list (+ (getG (cadar workingPath) (- (caddar workingPath) 1)) (getH (cadar workingPath) (- (caddar workingPath) 1))) (cadar workingPath) (- (caddar workingPath) 1))))
 		)(fixNext)(yellowcircle (cadar workingPath) (- (caddar workingPath) 1)))
 	)
 )
 
+; (defun sortNext()(let*(
+	; (temp (car nextUp))
+	; (store '(2000 2000 2000)))
+	; (def nextUp (cdr nextUp))(logr "TEST HERE")(logr nextUp)(logr temp)(logr store)
+	;;(if (<= (car temp) (caar nextUp))(let* ()(def nextUp (reverse nextUp))(def nextUp (append nextUp (list temp)))(def nextUp (reverse nextUp))))
+	; (sort nextUp (lambda (a b) (< (car a) (car b))))
+	
+	
+; ))
+
 (defun sortNext()(let*(
 	(temp (car nextUp))
-	(store (list)))
-	(if (>= (car temp) (cdaar nextUp))
-		(let* ()
-		(def nextUp (cdr nextUp))
-		(while (not nil temp)
-			(if (>= (car temp) (caar nextUp))(let* ()
-			(def store (append ((car nextUp))))
-			(def nextUp (cdr nextUp)))(let* () (def store (append temp))(def temp (cdr temp)))
-			)
-		)
-		(def nextUp (list store nextUp))
+	(store '()))
+	(def nextUp (cdr nextUp))
+	(while (car nextUp)
+		(if (< (car temp) (caar nextUp)) (let* ()(logr "MADE IT")(def nextUp (reverse nextUp))(def nextUp (append nextUp (list temp)))(def nextUp (reverse nextUp)))
+		(def store (reverse store))(def store (append (car nextUp)))(def nextUp (cdr nextUp))(def store (reverse store)))
+		(logr "NextUp")(logr nextUp)(logr "temp")(logr temp)(logr "store")(logr store)
 	)
-)))
+	(def nextUp (append store nextUp))
+	
+))
 
-(defun nextPos()(let* ()(logr visited)
+(defun nextPos()(let* ()(logr visited);(sortNext)	
 	(def workingPath (reverse workingPath))
 	(def workingPath (append workingPath (list(car nextUp))))
 	;(def workingPath (reverse workingPath))
-	(setq gVal (+ gVal 1))
+	;(setq gVal (+ gVal 1))
 	(greenRect (cadar nextUp) (caddar nextUp))
 	(def visited (append visited(list(list (cadar nextUp) (caddar nextUp)))))
 	(def nextUp (cdr nextUp))
 	)
 )
 
-(defun checkPath () (let* ();(logr workingPath);(logr visited) ;check in reverse order to add onto stack correctly
-	(checkUp)
-	(checkLeft)
-	(checkDown)
-	(checkRight))
-)
-
-; (defun checkPath () (let* ()(logr (list(cadar workingPath) (- (caddar workingPath) 1)))  ;check in reverse order to add onto stack correctly
-	; (if (member (list (cadar workingPath) (- (caddar workingPath) 1)) visited) (checkUp))
-	; (if (member (list (- (cadar workingPath) 1) (caddar workingPath)) visited) (checkLeft))
-	; (if (member (list (cadar workingPath) (+ (caddar workingPath) 1)) visited) (checkDown))
-	; (if (member (list (+ (cadar workingPath) 1) (caddar workingPath)) visited) (checkRight)))
+; (defun checkPath () (let* ()(logr workingPath)(logr visited) ;check in reverse order to add onto stack correctly
+	; (checkUp)
+	; (checkLeft)
+	; (checkDown)
+	; (checkRight))
 ; )
+
+(defun checkPath () (let* ()(logr nextUp) ;check in reverse order to add onto stack correctly
+	(if (> 320 (jp-pix-rbg-sum (* (cadar workingPath) gridSz) (* (- (caddar workingPath) 1) gridSz))) (checkUp))
+	(if (> 320 (jp-pix-rbg-sum (* (- (cadar workingPath) 1) gridSz) (* (caddar workingPath) gridSz))) (checkLeft))
+	(if (> 320 (jp-pix-rbg-sum (* (cadar workingPath) gridSz) (* (+ (caddar workingPath) 1) gridSz))) (checkDown))
+	(if (> 320 (jp-pix-rbg-sum (* (+ (cadar workingPath) 1) gridSz) (* (caddar workingPath) gridSz))) (checkRight)))
+	(if (= endPos (car visited))((logr 'a')(logr 'b')))
+)
 
 ;(checkPath)(logr nextUp)
 	
