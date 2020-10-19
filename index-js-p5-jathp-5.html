@@ -283,6 +283,7 @@
          (yy (+ 1 (* sz boty)))
          (pix (jp-pix-rbg-sum xx yy))
          (sctrl (js "g_sctrl")))
+		 
     ;(logr (stgr (list "draw sctrl,pix x,y =" sctrl pix xx yy )))
     ; (if (< 0 pix)
         ; (let ( )
@@ -333,7 +334,10 @@
       (setq iy 0)
       (setq ix (+ 1 ix)))
     ;(logr "Ending while ix.")
-    ))
+    
+	(checkPath)(nextPos)(logr "DRAW FN HERE")
+	)
+)
 
 (defun jp-zzdefg ()
 	;(let* ()(logr "foo")(logr "bar"))
@@ -461,7 +465,7 @@
 (setq gVal 0)
 (setq gridSz (js "g_grid.cell_size"))
 (setq gridHgt (js "g_grid.hgt"))
-(def visited startPos)
+(def visited (list startPos))
 
 ;;-----------DRAW THINGS-------------------
 
@@ -478,7 +482,6 @@
 (defun getH (arx ary)
   (+ (- (car endPos) arx) (- (cadr endPos) ary)))
 
-(logr startPos)
 (greenRect (car startPos) (cadr startPos))
 (def workingPath (list(list 0 (car startPos) (cadr startPos))))
 (def nextUp (list(list 10000 10000 10000)))
@@ -542,13 +545,32 @@
 	)
 )))
 
-(defun checkPath () (let* () ;check in reverse order to add onto stack correctly
-(checkUp)
-(checkLeft)
-(checkDown)
-(checkRight)))
+(defun nextPos()(let* ()(logr visited)
+	(def workingPath (reverse workingPath))
+	(def workingPath (append workingPath (list(car nextUp))))
+	;(def workingPath (reverse workingPath))
+	(setq gVal (+ gVal 1))
+	(greenRect (cadar nextUp) (caddar nextUp))
+	(def visited (append visited(list(list (cadar nextUp) (caddar nextUp)))))
+	(def nextUp (cdr nextUp))
+	)
+)
 
-(checkPath)(logr nextUp)
+(defun checkPath () (let* ();(logr workingPath);(logr visited) ;check in reverse order to add onto stack correctly
+	(checkUp)
+	(checkLeft)
+	(checkDown)
+	(checkRight))
+)
+
+; (defun checkPath () (let* ()(logr (list(cadar workingPath) (- (caddar workingPath) 1)))  ;check in reverse order to add onto stack correctly
+	; (if (member (list (cadar workingPath) (- (caddar workingPath) 1)) visited) (checkUp))
+	; (if (member (list (- (cadar workingPath) 1) (caddar workingPath)) visited) (checkLeft))
+	; (if (member (list (cadar workingPath) (+ (caddar workingPath) 1)) visited) (checkDown))
+	; (if (member (list (+ (cadar workingPath) 1) (caddar workingPath)) visited) (checkRight)))
+; )
+
+;(checkPath)(logr nextUp)
 	
 
 </script>
