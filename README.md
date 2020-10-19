@@ -35,7 +35,7 @@ Using firefox:
 
 
 Sample Invocation:
-Added to folder as: 
+Added to folder as: myCanvas-1665.jpg
 
 Features:
 
