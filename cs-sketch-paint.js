@@ -22,7 +22,7 @@ var g_button2; // btn
 var g_color;
 var g_sctrl;
 var g_tiles;
-var b_tiles_count //bot's tiles count's
+var g_bot = {x:0, y:0};
 
 var g_l4job = { id:1 }; // Put Lisp stuff f JS-to-access in ob; id to force ob.
 
@@ -77,11 +77,9 @@ function setup( ) // P5 Setup Fcn
     do_btn( ); //
     console.log( "p5 Load the image." );
     get_images( );
-	b_tiles_count = document.getElementById("bot_tiles_count"); //added bot's tiles count's
-    console.log( "p5 End P5 setup =====" );
+    console.log( "p5 End P5 setup =====" );	
 }
 
-var g_bot = { dir:3, x:0, y:0, color:100 }; // Dir is 0..7 clock, w 0 up.
 
 
 // ==================================================
@@ -106,7 +104,7 @@ function grid_to_pix( rx, ry ) // Cvt grid cell x,y to canvas x,y wrapped.
 
 function draw_sprite_in_cell( rsprite_id, rx, ry ) // wraps in x,y ifn.
 {
-    console.log( "(p5 draw_sprite_in_cell ", rsprite_id, rx, ry, " )" );
+    //console.log( "(p5 draw_sprite_in_cell ", rsprite_id, rx, ry, " )" );
     let sprite_ob = get_sprite_by_id( rsprite_id );
     let pix_ob = grid_to_pix( rx, ry );
     let ctx = g_p5_cnv.canvas.getContext( '2d' ); // get html toolbox to draw.
@@ -115,7 +113,7 @@ function draw_sprite_in_cell( rsprite_id, rx, ry ) // wraps in x,y ifn.
                      g_grid.cell_size, g_grid.cell_size,
                    pix_ob.x, pix_ob.y,
                      g_grid.cell_size, g_grid.cell_size );
-    console.log( "end draw_sprite_in_cell)" );
+    //console.log( "end draw_sprite_in_cell)" );
 }
 // ==================================================
 // =================== END New Maze Drawing Code ========
@@ -125,6 +123,24 @@ function draw_update()  // Update our display.
 {
     //console.log( "p5 Call g_l4job.draw_fn" );
     g_l4job.draw_fn( );
+
+}
+
+function redCircle(xCoord, yCoord)
+{
+	let tempx = (xCoord * g_grid.cell_size) + (g_grid.cell_size/2);
+	let tempy = (yCoord * g_grid.cell_size) + (g_grid.cell_size/2);
+	let radius = g_grid.cell_size - 2;
+	fill(204, 10, 0);
+	circle(tempx, tempy, radius);
+}
+
+function greenSquare(xCoord, yCoord)
+{
+	let tempx = (xCoord * g_grid.cell_size);
+	let tempy = (yCoord * g_grid.cell_size);
+	fill(0, 200, 0);
+	rect(tempx, tempy, g_grid.hgt, g_grid.hgt);
 }
 
 function csjs_get_pixel_color_sum( rx, ry )
@@ -139,8 +155,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     
     ++g_frame_cnt;
-    if (!g_stop
-        && mouseIsPressed
+    if (mouseIsPressed
         && (0 == g_frame_cnt % g_frame_mod))
     {
         //console.log( "p5 draw" );
